@@ -6,7 +6,7 @@ import DefaultLayout from "./components/layout/default-layout/DefaultLayout"
 import { fetchProducts } from "@/lib/api/products"
 import type { Plan } from "@/types/plan"
 import CardBenefits from "./components/card-benefits/CardBenefits"
-import Bubble from "./components/bubble/Bubble"
+// import Bubble from "./components/bubble/Bubble" // Temporariamente desabilitado: robô de disparo ainda não está pronto
 import { useLocation, useSearchParams } from "react-router-dom"
 import { getOrderByToken } from "./lib/api/orders"
 import { saveOrderSession } from "@/lib/order-storage"
@@ -119,7 +119,7 @@ export function App() {
 
   return (
     <main>
-      <Bubble />
+      {/* <Bubble /> Temporariamente desabilitado: robô de disparo ainda não está pronto */}
       <Hero plan={plans.find((plan) => plan.id === HERO_PLAN_ID) ?? null} />
 
       <div className="bg-[#F6F6F9] pt-10 w-full">

@@ -3,6 +3,7 @@ import { useState, type MouseEvent } from "react"
 import { Link, useLocation } from "react-router-dom"
 import { usePartner } from "@/hooks/use-partner-id"
 import { getPartnerHashFromUrl } from "@/lib/partner-hash"
+import VivoEmpresasLogo from "@/components/layout/VivoEmpresasLogo"
 
 function isCheckoutPath(pathname: string) {
   return pathname === "/contratacao" || pathname.endsWith("/contratacao")
@@ -21,6 +22,9 @@ function scrollToSection(hash: string) {
   target.scrollIntoView({ behavior: "smooth", block: "start" })
   return true
 }
+
+const HEADER_CLASS_NAME =
+  "sticky top-0 z-40 w-full border-b border-[#EAEAEA] bg-white py-4"
 
 export default function Header() {
   const { partnerName, partnerLogoUrl } = usePartner()
@@ -42,15 +46,11 @@ export default function Header() {
 
   if (!showNav) {
     return (
-      <header className="py-4 bg-white">
+      <header className={HEADER_CLASS_NAME}>
         <div className="container max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between">
-            <Link to={homePath}>
-              <img
-                src="/logo-vivo-empresas.png"
-                alt="Vivo Empresas"
-                className="w-[91px] h-[48px]"
-              />
+            <Link to={homePath} className="inline-flex shrink-0">
+              <VivoEmpresasLogo />
             </Link>
             {partnerLogoUrl && (
               <img
@@ -66,16 +66,12 @@ export default function Header() {
   }
 
   return (
-    <header className="py-4 bg-white">
+    <header className={HEADER_CLASS_NAME}>
       <div className="container max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between">
           <div className={`flex items-center justify-between w-full gap-8 md:gap-40 md:justify-start ${isMenuOpen ? "pb-4" : ""}`}>
-            <Link to={homePath}>
-              <img
-                src="/logo-vivo-empresas.png"
-                alt="Vivo Empresas"
-                className="w-[91px] h-[48px]"
-              />
+            <Link to={homePath} className="inline-flex shrink-0">
+              <VivoEmpresasLogo />
             </Link>
 
             <Menu

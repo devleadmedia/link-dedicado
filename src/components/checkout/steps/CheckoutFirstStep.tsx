@@ -150,7 +150,7 @@ export default function CheckoutFirstStep() {
   return (
     <div className="text-[#3F3F3F]">
       <p className="text-base font-bold md:text-[20px]">{description}</p>
-      <h1 className="text-lg leading-snug break-words md:text-2xl">{title}</h1>
+      <h1 className="text-lg leading-snug break-words md:text-sm">{title}</h1>
 
       <form
         className="grid grid-cols-1 gap-4 text-[#3F3F3F] md:grid-cols-2 md:gap-x-6 md:gap-y-2"

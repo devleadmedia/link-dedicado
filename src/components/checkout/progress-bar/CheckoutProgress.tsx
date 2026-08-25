@@ -30,8 +30,8 @@ export function CheckoutProgress({ progress }: CheckoutprogresssProps) {
               {item.number}
             </span>
             <span
-              className={`w-full text-[10px] leading-tight font-bold hyphens-auto break-words md:text-sm lg:text-[20px] ${
-                progress >= item.number ? "text-[#1F1D1D]" : ""
+              className={`hidden w-full text-[10px] leading-tight font-bold hyphens-auto break-words md:text-sm lg:text-sm md:block ${
+                progress >= item.number ? "text-[#1F1D1D]" : "text-[#AAAAAA]"
               }`}
             >
               {item.label}

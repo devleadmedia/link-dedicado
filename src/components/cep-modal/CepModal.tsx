@@ -204,7 +204,13 @@ export default function CepModal() {
       <div className="flex flex-col md:flex-row w-full max-w-170 my-auto">
 
         <div className="bg-[#5A088A] rounded-t-lg md:rounded-tl-lg md:rounded-tr-none md:rounded-bl-lg p-6 flex flex-col gap-4 items-center justify-center px-6 shrink-0">
-          <img src="/logo-vivo-modal.png" alt="Vivo" className="max-w-[103px]" />
+          <img
+            src="/logo-vivo-modal.png"
+            alt="Vivo Empresas"
+            width={103}
+            height={41}
+            className="block h-auto w-[103px] max-w-none shrink-0"
+          />
           <p className="text-[14px] font-bold text-white text-center max-w-55">Consulte os planos disponíveis para o seu endereço</p>
         </div>
 

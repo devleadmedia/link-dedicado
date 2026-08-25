@@ -3,10 +3,42 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
 
+@font-face {
+    font-family: 'ITC Officina Serif Std';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/itc-officina-serif-std/itc-officina-serif-std-webfont/itc-officina-serif-std-book-58703733c9fd5.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'ITC Officina Serif Std';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/itc-officina-serif-std/itc-officina-serif-std-webfont/itc-officina-serif-std-book-italic-5870377a5cfb8.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'ITC Officina Serif Std';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/itc-officina-serif-std/itc-officina-serif-std-webfont/itc-officina-serif-std-bold-58b37d4ef28b0.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'ITC Officina Serif Std';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/itc-officina-serif-std/itc-officina-serif-std-webfont/itc-officina-serif-std-bold-italic-58b37d286f374.woff') format('woff');
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-heading: var(--font-sans);
+    --font-heading: 'ITC Officina Serif Std', serif;
     --font-sans: 'Inter Variable', sans-serif;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);

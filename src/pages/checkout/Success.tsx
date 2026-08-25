@@ -1,7 +1,6 @@
 import CheckoutDefaultCard from "@/components/checkout/default-card/CheckoutDefaultCard"
 import DefaultLayout from "@/components/layout/default-layout/DefaultLayout"
 import {
-  formatDueDay,
   formatInstallationOption,
   getPlanBenefitDetail,
   paymentMethodLabels,
@@ -69,7 +68,6 @@ export default function Success() {
   const paymentMethod = fourthStep
     ? paymentMethodLabels[fourthStep.paymentMethod]
     : "-"
-  const dueDay = fourthStep?.dueDay ? formatDueDay(fourthStep.dueDay) : "-"
   const installationOptions = fourthStep
     ? [
       formatInstallationOption(fourthStep.firstOptionDate, fourthStep.firstOptionPeriod),
@@ -147,9 +145,6 @@ export default function Success() {
             <CheckoutDefaultCard className="mt-2">
               <p className="text-xs mb-2">Forma de pagamento</p>
               <p className="text-[20px] font-bold mb-4">{paymentMethod}</p>
-
-              <p className="text-xs mb-2">Data de vencimento</p>
-              <p className="text-[20px] font-bold mb-4">{dueDay}</p>
 
               <p className="text-xs mb-2">Prazo mínimo de permanência</p>
               <p className="text-[20px] font-bold">12 Meses</p>

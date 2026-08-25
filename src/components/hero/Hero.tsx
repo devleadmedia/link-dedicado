@@ -35,7 +35,7 @@ export default function Hero({ plan }: HeroProps) {
   return (
     <div className="overflow-hidden bg-[#660099] text-white md:bg-[url('/hero-bg.png')] md:bg-cover md:bg-center md:bg-no-repeat">
       <DefaultLayout className="flex flex-col items-center justify-between mb-4 md:mb-0 md:flex-row">
-        <div className="flex flex-col justify-center items-center gap-4 pt-15 max-w-140 md:items-start md:justify-start md:pb-15">
+        <div className="font-heading flex flex-col justify-center items-center gap-4 pt-15 max-w-140 md:items-start md:justify-start md:pb-15">
 
           <div className="text-center md:text-left">
             <h1 className="font-bold text-4xl">
@@ -57,7 +57,7 @@ export default function Hero({ plan }: HeroProps) {
 
             <div className="flex flex-col items-center pl-4">
               <div className="relative flex items-center">
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col">
                   <p className="uppercase text-[8px] text-left">Por <span className="block">apenas</span></p>
                   <p className="text-lg font-bold">R$</p>
                 </div>

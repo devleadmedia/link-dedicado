@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { getPartnerHashFromUrl } from "@/lib/partner-hash";
 import { usePartner } from "@/hooks/use-partner-id";
 import { formatCnpj } from "@/lib/cnpj";
+import VivoEmpresasLogo from "@/components/layout/VivoEmpresasLogo";
 
 export function Footer({ setIsTalkToUsOpen }: { setIsTalkToUsOpen: (isOpen: boolean) => void }) {
   const navigate = useNavigate();
@@ -27,11 +28,7 @@ export function Footer({ setIsTalkToUsOpen }: { setIsTalkToUsOpen: (isOpen: bool
       <DefaultLayout>
         <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-32">
           <div className="flex items-center gap-8">
-            <img
-              src="/logo-vivo-empresas.png"
-              alt="Vivo Empresas"
-              className="w-[91px] h-[48px]"
-            />
+            <VivoEmpresasLogo />
 
             {partnerLogoUrl && (
               <img
