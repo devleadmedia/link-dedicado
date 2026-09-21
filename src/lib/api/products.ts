@@ -1,6 +1,6 @@
 import { api } from "@/lib/api/client"
 import { formatPrice } from "@/lib/price"
-import { VIVO_CATEGORY, VIVO_CLIENT_TYPE } from "@/lib/constants/vivo"
+import { VIVO_CATEGORY, VIVO_CLIENT_TYPE, VIVO_COMPANY_ID } from "@/lib/constants/vivo"
 import type { Plan, PlanDetail } from "@/types/plan"
 import type { Product, ProductDetail, ProductsResponse } from "@/types/product"
 
@@ -116,6 +116,7 @@ export function mapProductToPlan(product: Product): Plan {
 export async function fetchProducts(page = 1, perPage = 100) {
   const { data } = await api.get<ProductsResponse>("/telecom/vivo/products", {
     params: {
+      company_id: VIVO_COMPANY_ID,
       client_type: VIVO_CLIENT_TYPE,
       page,
       per_page: perPage,
