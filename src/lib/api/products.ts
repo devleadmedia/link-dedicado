@@ -119,9 +119,10 @@ export async function fetchProducts(page = 1, perPage = 100) {
       client_type: VIVO_CLIENT_TYPE,
       page,
       per_page: perPage,
+      category: VIVO_CATEGORY
     },
   })
-  console.log(data)
+  console.log(data.products)
 
   if (!data.success) {
     throw new Error("Não foi possível carregar os planos.")

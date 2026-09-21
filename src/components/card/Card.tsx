@@ -14,8 +14,6 @@ export default function Card({ plan }: CardProps) {
   const topDetails = plan.details.filter((detail) => detail.highlight_top)
   const bottomDetails = plan.details.filter((detail) => detail.highlight_bottom)
 
-  console.log(plan)
-
   const handleContract = async () => {
     setIsSubmitting(true)
 
