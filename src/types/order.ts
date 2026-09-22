@@ -160,6 +160,9 @@ export type Order = {
   terms_accepted_second_call: boolean | null
   accept_offers_second_call: boolean | null
 
+  // CRM / Consultor
+  responsible_consultant: ResponsibleConsultant | null
+
   // Controle
   terms_accepted: boolean
   accept_offers: boolean
@@ -180,6 +183,16 @@ export type SecondCallResponse = {
   order_token: string
   order_token_expires_at: string
   partial_data: Order
+}
+
+export type ResponsibleConsultantInput = {
+  hash: string
+}
+
+export type ResponsibleConsultant = {
+  hash: string
+  name?: string | null
+  role?: string | null
 }
 
 export type CreateOrderPayload = {
@@ -208,6 +221,7 @@ export type CreateOrderPayload = {
   journey: string[]
   previous_order_id: null
   lp_url?: string
+  responsible_consultant?: ResponsibleConsultantInput
 }
 
 export type UpdateOrderPayload = Partial<{
@@ -258,6 +272,7 @@ export type UpdateOrderPayload = Partial<{
   accept_offers: boolean
   is_consultation: boolean
   is_order: boolean
+  responsible_consultant: ResponsibleConsultantInput
 }>
 
 export type CreateOrderResponse = {
@@ -286,4 +301,5 @@ export type CloseOrderPayload = {
   status: "FECHADO"
   is_consultation?: boolean
   is_order?: boolean
+  responsible_consultant?: ResponsibleConsultantInput
 }

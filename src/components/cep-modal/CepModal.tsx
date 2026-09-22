@@ -18,7 +18,7 @@ import { saveCepAddress } from "@/lib/cep-storage"
 import { trackCepSubmitted } from "@/lib/gtm"
 import { mapCreateOrderPayload } from "@/lib/order-mappers"
 import { getOrderSession, saveOrderSession, toPartnerSessionFields } from "@/lib/order-storage"
-import { getPartnerHashFromUrl } from "@/lib/partner-hash"
+import { getConsultantHashForPartner, getPartnerHashFromUrl } from "@/lib/partner-hash"
 import {
   cepModalSchema,
   getCepModalFieldErrors,
@@ -171,7 +171,11 @@ export default function CepModal() {
       }
 
       if (partner?.partner_hash && !getPartnerHashFromUrl()) {
-        window.history.replaceState(null, "", `/${partner.partner_hash}`)
+        const consultantHash = getConsultantHashForPartner(partner.partner_hash)
+        const nextPath = consultantHash
+          ? `/${partner.partner_hash}/${consultantHash}`
+          : `/${partner.partner_hash}`
+        window.history.replaceState(null, "", nextPath)
       }
 
       saveOrderSession({

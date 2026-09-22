@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { useLocation } from "react-router-dom"
 import { resolvePartner } from "@/lib/api/partner-resolver"
 import { getCepAddress } from "@/lib/cep-storage"
-import { getPartnerHashFromUrl } from "@/lib/partner-hash"
+import { captureConsultantHash, getPartnerHashFromUrl } from "@/lib/partner-hash"
 import {
   getOrderSession,
   saveOrderSession,
@@ -19,6 +19,8 @@ export function usePartnerSync() {
   const { pathname } = useLocation()
 
   useEffect(() => {
+    captureConsultantHash(pathname)
+
     const session = getOrderSession()
     const cep = getCepAddress()?.cep
     if (!session || !cep) return

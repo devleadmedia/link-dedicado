@@ -9,6 +9,7 @@ import {
 import { bankOptions, type BankValue } from "@/lib/constants/banks"
 import { formatCpf } from "@/lib/cpf"
 import { saveOrderSession } from "@/lib/order-storage"
+import { adoptConsultantHashFromOrder, getPartnerHashFromUrl } from "@/lib/partner-hash"
 import type { Order } from "@/types/order"
 import type { CheckoutFourthStep } from "@/types/checkout"
 import { useEffect, useState } from "react"
@@ -130,6 +131,10 @@ export default function Resume() {
     getOrderByToken(token)
       .then((data) => {
         clearCheckoutFlow()
+        adoptConsultantHashFromOrder(
+          data.partial_data.responsible_consultant,
+          getPartnerHashFromUrl(),
+        )
 
         saveOrderSession({
           orderId: data.order_id,

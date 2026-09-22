@@ -1,8 +1,11 @@
 import { api } from "@/lib/api/client"
+import { getStoredConsultantHash } from "@/lib/partner-hash"
+import { getOrderSession } from "@/lib/order-storage"
 import type {
   CloseOrderPayload,
   CreateOrderPayload,
   CreateOrderResponse,
+  ResponsibleConsultantInput,
   SecondCallResponse,
   UpdateOrderPayload,
 } from "@/types/order"
@@ -49,8 +52,20 @@ export async function getOrderByToken(token: string) {
   return data
 }
 
+function responsibleConsultant(
+  partnerId: number | null | undefined,
+): { responsible_consultant: ResponsibleConsultantInput } | Record<string, never> {
+  const hash = getStoredConsultantHash()
+  if (!hash || partnerId == null) return {}
+
+  return { responsible_consultant: { hash } }
+}
+
 export async function createOrder(payload: CreateOrderPayload) {
-  const { data } = await api.post<CreateOrderResponse>("/telecom/vivo/orders", payload)
+  const { data } = await api.post<CreateOrderResponse>("/telecom/vivo/orders", {
+    ...payload,
+    ...responsibleConsultant(payload.partner_id),
+  })
   return data
 }
 
@@ -59,7 +74,14 @@ export async function updateOrder(
   orderToken: string,
   payload: UpdateOrderPayload,
 ) {
-  const { data } = await api.put(`/telecom/vivo/orders/${orderId}`, payload, {
+  const partnerId = payload.partner_id !== undefined
+    ? payload.partner_id
+    : getOrderSession()?.partnerId
+
+  const { data } = await api.put(`/telecom/vivo/orders/${orderId}`, {
+    ...payload,
+    ...responsibleConsultant(partnerId),
+  }, {
     headers: {
       Authorization: `Bearer ${orderToken}`,
     },
@@ -68,14 +90,29 @@ export async function updateOrder(
   return data
 }
 
-export async function updateSecondCall(token: string, data: SecondCallUpdateData) {
-  const { data: responseData } = await api.put("/telecom/vivo/orders/second-call", { token, data })
+export async function updateSecondCall(
+  token: string,
+  data: SecondCallUpdateData,
+  partnerId?: number | null,
+) {
+  const resolvedPartnerId = partnerId !== undefined
+    ? partnerId
+    : getOrderSession()?.partnerId
+
+  const { data: responseData } = await api.put("/telecom/vivo/orders/second-call", {
+    token,
+    data: {
+      ...data,
+      ...responsibleConsultant(resolvedPartnerId),
+    },
+  })
   return responseData
 }
 
 export async function closeOrder(orderId: number, orderToken: string) {
   const payload: CloseOrderPayload = {
     status: "FECHADO",
+    ...responsibleConsultant(getOrderSession()?.partnerId),
   }
 
   const { data } = await api.patch(

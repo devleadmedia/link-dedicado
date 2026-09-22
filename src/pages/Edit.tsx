@@ -7,6 +7,7 @@ import EditFourthSection, { type EditFourthSectionFormData } from "@/components/
 import DefaultLayout from "@/components/layout/default-layout/DefaultLayout"
 import { StepProvider } from "@/contexts/step/StepContext"
 import { getOrderByToken, updateSecondCall } from "@/lib/api/orders"
+import { adoptConsultantHashFromOrder, getPartnerHashFromUrl } from "@/lib/partner-hash"
 import { bankOptions, type BankValue } from "@/lib/constants/banks"
 import { formatCpf } from "@/lib/cpf"
 import { formatApiDate, mapPaymentMethod, mapPeriod } from "@/lib/order-mappers"
@@ -153,6 +154,7 @@ function CheckoutContent() {
   const [form, setForm] = useState<EditFormData>(initialForm)
   const [errors, setErrors] = useState<Partial<Record<keyof EditFormData, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [partnerId, setPartnerId] = useState<number | null>(null)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -167,6 +169,8 @@ function CheckoutContent() {
     getOrderByToken(token)
       .then((data) => {
         const order = data.partial_data
+        setPartnerId(order.partner_id)
+        adoptConsultantHashFromOrder(order.responsible_consultant, getPartnerHashFromUrl())
         setForm(buildInitialForm(order))
         if (order.plan) {
           setPlan({
@@ -254,7 +258,7 @@ function CheckoutContent() {
         additional_phone: form.phone2 || undefined,
         terms_accepted: form.termsOfUse,
         accept_offers: form.communication,
-      })
+      }, partnerId)
 
       setSubmitSuccess(true)
       navigate("/editar-concluido")

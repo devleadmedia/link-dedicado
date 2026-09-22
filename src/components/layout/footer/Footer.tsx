@@ -1,7 +1,7 @@
 import { Copyright } from "lucide-react";
 import DefaultLayout from "../default-layout/DefaultLayout";
 import { useNavigate } from "react-router-dom";
-import { getPartnerHashFromUrl } from "@/lib/partner-hash";
+import { withPartnerPath } from "@/lib/partner-hash";
 import { usePartner } from "@/hooks/use-partner-id";
 import { formatCnpj } from "@/lib/cnpj";
 import VivoEmpresasLogo from "@/components/layout/VivoEmpresasLogo";
@@ -9,8 +9,7 @@ import VivoEmpresasLogo from "@/components/layout/VivoEmpresasLogo";
 export function Footer({ setIsTalkToUsOpen }: { setIsTalkToUsOpen: (isOpen: boolean) => void }) {
   const navigate = useNavigate();
   const { partnerName, partnerLogoUrl, partnerCnpj } = usePartner();
-  const partnerHash = getPartnerHashFromUrl();
-  const privacyPath = partnerHash ? `/${partnerHash}/politica-de-privacidade` : "/politica-de-privacidade";
+  const privacyPath = withPartnerPath("/politica-de-privacidade");
   const formattedCnpj = partnerCnpj ? formatCnpj(partnerCnpj) : null;
 
   return (

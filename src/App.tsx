@@ -10,6 +10,7 @@ import CardBenefits from "./components/card-benefits/CardBenefits"
 import { useLocation, useSearchParams } from "react-router-dom"
 import { getOrderByToken } from "./lib/api/orders"
 import { saveOrderSession } from "@/lib/order-storage"
+import { adoptConsultantHashFromOrder, getPartnerHashFromUrl } from "@/lib/partner-hash"
 import { HERO_PLAN_ID } from "@/lib/constants/vivo"
 import { HomeTable } from "./components/home-table/HomeTable"
 import FAQ from "./components/faq/FAQ"
@@ -48,6 +49,10 @@ export function App() {
           partnerHash: null,
           partnerCnpj: null,
         })
+        adoptConsultantHashFromOrder(
+          data.partial_data.responsible_consultant,
+          getPartnerHashFromUrl(),
+        )
 
         const order = data.partial_data
         const transbordo =

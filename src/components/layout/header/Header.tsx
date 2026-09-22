@@ -2,7 +2,7 @@ import { Menu } from "lucide-react"
 import { useState, type MouseEvent } from "react"
 import { Link, useLocation } from "react-router-dom"
 import { usePartner } from "@/hooks/use-partner-id"
-import { getPartnerHashFromUrl } from "@/lib/partner-hash"
+import { withPartnerPath } from "@/lib/partner-hash"
 import VivoEmpresasLogo from "@/components/layout/VivoEmpresasLogo"
 
 function isCheckoutPath(pathname: string) {
@@ -31,8 +31,7 @@ export default function Header() {
   const { pathname } = useLocation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const showNav = !isCheckoutPath(pathname)
-  const partnerHash = getPartnerHashFromUrl()
-  const homePath = partnerHash ? `/${partnerHash}` : "/"
+  const homePath = withPartnerPath("/")
 
   const handleNavClick = (hash: string) => (event: MouseEvent<HTMLAnchorElement>) => {
     setIsMenuOpen(false)
