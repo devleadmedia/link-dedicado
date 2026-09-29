@@ -1,7 +1,6 @@
 import CheckoutDefaultCard from "@/components/checkout/default-card/CheckoutDefaultCard"
 import DefaultLayout from "@/components/layout/default-layout/DefaultLayout"
 import {
-  formatInstallationOption,
   getPlanBenefitDetail,
   paymentMethodLabels,
 } from "@/components/checkout/steps/shared/StepUtils"
@@ -68,13 +67,6 @@ export default function Success() {
   const paymentMethod = fourthStep
     ? paymentMethodLabels[fourthStep.paymentMethod]
     : "-"
-  const installationOptions = fourthStep
-    ? [
-      formatInstallationOption(fourthStep.firstOptionDate, fourthStep.firstOptionPeriod),
-      formatInstallationOption(fourthStep.secondOptionDate, fourthStep.secondOptionPeriod),
-      formatInstallationOption(fourthStep.thirdOptionDate, fourthStep.thirdOptionPeriod),
-    ]
-    : ["-", "-", "-"]
 
   return (
     <div className="bg-[#EAEAEA]">
@@ -148,13 +140,6 @@ export default function Success() {
 
               <p className="text-xs mb-2">Prazo mínimo de permanência</p>
               <p className="text-[20px] font-bold">12 Meses</p>
-            </CheckoutDefaultCard>
-
-            <CheckoutDefaultCard className="mt-2">
-              <p className="text-xs mb-2">Instalação</p>
-              <p className="text-[20px] font-bold">Opção 1: <span className="font-normal">{installationOptions[0]}</span></p>
-              <p className="text-[20px] font-bold">Opção 2: <span className="font-normal">{installationOptions[1]}</span></p>
-              <p className="text-[20px] font-bold">Opção 3: <span className="font-normal">{installationOptions[2]}</span></p>
             </CheckoutDefaultCard>
           </div>
 

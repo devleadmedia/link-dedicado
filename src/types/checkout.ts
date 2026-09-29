@@ -37,12 +37,6 @@ export type CheckoutFourthStep = {
   account?: string
   bankAccountHolderName?: string
   bankAccountHolderCpf?: string
-  firstOptionDate: string
-  firstOptionPeriod: "morning" | "afternoon"
-  secondOptionDate: string
-  secondOptionPeriod: "morning" | "afternoon"
-  thirdOptionDate: string
-  thirdOptionPeriod: "morning" | "afternoon"
 }
 
 export type CheckoutFifthStep = {

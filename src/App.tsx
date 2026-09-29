@@ -91,7 +91,10 @@ export function App() {
 
       if (window.matchMedia("(min-width: 768px)").matches) {
         setCardsPerPage(3)
+        return
       }
+
+      setCardsPerPage(1)
     }
 
     updateCardsPerPage()
@@ -120,7 +123,7 @@ export function App() {
     () => plans.slice(currentPage * cardsPerPage, (currentPage + 1) * cardsPerPage),
     [plans, currentPage, cardsPerPage],
   )
-  const showPagination = plans.length > cardsPerPage
+  const showPagination = !isLoading && !error && plans.length > 0
 
   return (
     <main>

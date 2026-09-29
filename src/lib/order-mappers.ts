@@ -44,15 +44,6 @@ export function formatApiDate(value: string) {
   return `${day}/${month}/${year}`
 }
 
-export function mapPeriod(period: CheckoutFourthStep["firstOptionPeriod"]) {
-  const periodMap = {
-    morning: "manhã",
-    afternoon: "tarde",
-  } as const
-
-  return periodMap[period]
-}
-
 export function mapPaymentMethod(paymentMethod: CheckoutFourthStep["paymentMethod"]) {
   return paymentMethod === "bankSlip" ? "boleto" : "debito_automatico"
 }
@@ -238,12 +229,6 @@ export function mapFourthStepUpdate(data: CheckoutFourthStep): UpdateOrderPayloa
           bank_account_holder_cpf: sanitizeCpf(data.bankAccountHolderCpf ?? ""),
         }
       : {}),
-    installation_preferred_date_one: formatApiDate(data.firstOptionDate),
-    installation_preferred_period_one: mapPeriod(data.firstOptionPeriod),
-    installation_preferred_date_two: formatApiDate(data.secondOptionDate),
-    installation_preferred_period_two: mapPeriod(data.secondOptionPeriod),
-    installation_preferred_date_three: formatApiDate(data.thirdOptionDate),
-    installation_preferred_period_three: mapPeriod(data.thirdOptionPeriod),
   }
 }
 

@@ -1,10 +1,6 @@
 import { useStep } from "@/contexts/step/StepContext"
-import { /* dueDayOptions, */ getInstallationDateOptions, stepTitleAndDescription } from "./shared/StepUtils"
-import { useEffect, useMemo, useState } from "react"
-import { getFourthStep, getSecondStep, saveFourthStep } from "@/lib/checkout-storage"
-import { getSelectedExtraOptions } from "@/lib/extras"
-import { getPlan } from "@/lib/plan-storage"
-import { formatPrice } from "@/lib/price"
+import { useEffect, useState } from "react"
+import { getFourthStep, saveFourthStep } from "@/lib/checkout-storage"
 import type { CheckoutFourthStep } from "@/types/checkout"
 import { tryUpdateOrder } from "@/lib/order-actions"
 import { trackCheckoutStep } from "@/lib/gtm"
@@ -31,55 +27,14 @@ const initialForm: FourthStepFormInput = {
   account: "",
   bankAccountHolderName: "",
   bankAccountHolderCpf: "",
-  firstOptionDate: "",
-  firstOptionPeriod: "",
-  secondOptionDate: "",
-  secondOptionPeriod: "",
-  thirdOptionDate: "",
-  thirdOptionPeriod: "",
 }
 
-const installationOptions = [
-  {
-    title: "1ª opção",
-    dateField: "firstOptionDate",
-    periodField: "firstOptionPeriod",
-    dateId: "first-option-date",
-    periodId: "first-option-period",
-  },
-  {
-    title: "2ª opção",
-    dateField: "secondOptionDate",
-    periodField: "secondOptionPeriod",
-    dateId: "second-option-date",
-    periodId: "second-option-period",
-  },
-  {
-    title: "3ª opção",
-    dateField: "thirdOptionDate",
-    periodField: "thirdOptionPeriod",
-    dateId: "third-option-date",
-    periodId: "third-option-period",
-  },
-] as const
-
 export default function CheckoutFourthStep() {
-  const { step, nextStep } = useStep()
-  // const title = stepTitleAndDescription[step].title
-  // const description = stepTitleAndDescription[step].description
-  const secondTitle = stepTitleAndDescription[step].secondTitle ?? ""
-  const secondDescription = stepTitleAndDescription[step].secondDescription ?? ""
+  const { nextStep } = useStep()
 
   const [form, setForm] = useState<FourthStepFormInput>(initialForm)
   const [errors, setErrors] = useState<Partial<Record<keyof FourthStepFormData, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const installationDateOptions = useMemo(() => getInstallationDateOptions(20), [])
-
-  const plan = getPlan()
-  const extraIds = getSecondStep()?.extraIds ?? []
-  const extrasTotal = getSelectedExtraOptions(extraIds, plan?.extras)
-    .reduce((total, extra) => total + extra.price, 0)
-  const totalMonthly = (plan?.monthlyPrice ?? 0) + extrasTotal
 
   useEffect(() => {
     const saved = getFourthStep()
@@ -123,7 +78,7 @@ export default function CheckoutFourthStep() {
 
       nextStep()
     } catch {
-      setErrors({ dueDay: "Não foi possível enviar os dados. Tente novamente." })
+      setErrors({ paymentMethod: "Não foi possível enviar os dados. Tente novamente." })
     } finally {
       setIsSubmitting(false)
     }
@@ -194,17 +149,11 @@ export default function CheckoutFourthStep() {
               }}
               className="grid grid-cols-1 gap-2 md:grid-cols-2">
               <div className="flex items-center justify-between py-4 px-4 border rounded-sm">
-                <Label htmlFor="bankSlip" className="flex-col items-start gap-0 text-[16px] leading-normal">
-                  Boleto Bancário
-                  <span className="font-bold">R$ {formatPrice(totalMonthly)}/mês</span>
-                </Label>
+                <Label htmlFor="bankSlip" className="text-[16px]">Boleto Bancário</Label>
                 <RadioGroupItem value="bankSlip" id="bankSlip" className="bg-white h-6 w-6" />
               </div>
               <div className="flex items-center justify-between py-4 px-4 border rounded-sm bg-[#DDF9EC]">
-                <Label htmlFor="debitAuto" className="flex-col items-start gap-0 text-[16px] text-[#1A311E] leading-normal">
-                  Débito Automático
-                  <span className="font-bold">R$ {formatPrice(totalMonthly - 10)}/mês</span>
-                </Label>
+                <Label htmlFor="debitAuto" className="text-[16px]">Débito Automático</Label>
                 <RadioGroupItem value="debitAuto" id="debitAuto" className="bg-white h-6 w-6" />
               </div>
             </RadioGroup>
@@ -297,66 +246,6 @@ export default function CheckoutFourthStep() {
               </div>
             </>
           )}
-        </div>
-      </div>
-    )
-  }
-
-  const secondCard = () => {
-    return (
-      <div className="text-[#3F3F3F] mt-12">
-        <h1 className="text-lg leading-snug break-words md:text-2xl">{secondTitle}</h1>
-        <p className="text-base font-bold md:text-[20px]">{secondDescription}</p>
-
-        <div className="grid gap-4 mt-7 text-[#3F3F3F] md:grid-cols-6 md:gap-x-6 md:gap-y-3">
-          {installationOptions.map((option) => (
-            <div key={option.dateId} className="md:col-span-2">
-              <p className="text-[20px] font-bold mb-4">{option.title}</p>
-              <Label htmlFor={option.dateId} className="text-[16px] mb-2">Data</Label>
-              <Select
-                value={form[option.dateField]}
-                onValueChange={handleSelectChange(option.dateField)}>
-                <SelectTrigger
-                  id={option.dateId}
-                  className="w-full rounded-sm py-5 mb-2"
-                  aria-invalid={Boolean(errors[option.dateField])}>
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent className="rounded-sm">
-                  {installationDateOptions.map((dateOption) => (
-                    <SelectItem
-                      key={dateOption.value}
-                      value={dateOption.value}
-                      disabled={dateOption.disabled}>
-                      {dateOption.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors[option.dateField] && (
-                <p className="text-xs text-red-600 mt-1 mb-2">{errors[option.dateField]}</p>
-              )}
-
-              <Label htmlFor={option.periodId} className="text-[16px] mb-2">Período</Label>
-              <Select
-                value={form[option.periodField]}
-                onValueChange={handleSelectChange(option.periodField)}>
-                <SelectTrigger
-                  id={option.periodId}
-                  className="w-full rounded-sm py-5"
-                  aria-invalid={Boolean(errors[option.periodField])}>
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent className="rounded-sm">
-                  <SelectItem value="morning">Manhã</SelectItem>
-                  <SelectItem value="afternoon">Tarde</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors[option.periodField] && (
-                <p className="text-xs text-red-600 mt-1">{errors[option.periodField]}</p>
-              )}
-            </div>
-          ))}
 
           <div className="md:col-span-6">
             <Button
@@ -374,7 +263,6 @@ export default function CheckoutFourthStep() {
   return (
     <form onSubmit={handleSubmit} noValidate>
       {firstCard()}
-      {secondCard()}
     </form>
   )
 }

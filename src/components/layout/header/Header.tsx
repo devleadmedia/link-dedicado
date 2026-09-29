@@ -78,18 +78,17 @@ export default function Header() {
               onClick={() => setIsMenuOpen((prev) => !prev)}
             />
 
-            <div className="hidden w-full items-center justify-end gap-8 md:flex md:px-12">
+            <nav className="nav hidden w-full items-center justify-end md:flex md:px-12">
               {NAV_ITEMS.map((item) => (
                 <Link
                   key={item.hash}
                   to={`${homePath}#${item.hash}`}
                   onClick={handleNavClick(item.hash)}
-                  className="text-[#505050]"
                 >
                   {item.label}
                 </Link>
               ))}
-            </div>
+            </nav>
           </div>
           {partnerLogoUrl && (
             <img
@@ -101,13 +100,13 @@ export default function Header() {
         </div>
       </div>
       {isMenuOpen && (
-        <ul className="flex flex-col border-t bg-white w-full">
+        <ul className="nav flex flex-col border-t bg-white w-full">
           {NAV_ITEMS.map((item) => (
             <li key={item.hash} className="pt-4 select-none">
               <Link
                 to={`${homePath}#${item.hash}`}
                 onClick={handleNavClick(item.hash)}
-                className="pl-4 text-[#505050]"
+                className="pl-4"
               >
                 {item.label}
               </Link>

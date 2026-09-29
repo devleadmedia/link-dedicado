@@ -44,7 +44,7 @@ export default function CheckoutSummary({ onEditStep }: Props) {
     const missing: string[] = []
     if (firstStep === null) missing.push('Titular')
     if (thirdStep === null) missing.push('Instalação')
-    if (fourthStep === null) missing.push('Agendamento')
+    if (fourthStep === null) missing.push('Pagamento')
     if (fifthStep === null) missing.push('Confirmação')
 
     if (missing.length > 0) {
@@ -134,7 +134,7 @@ export default function CheckoutSummary({ onEditStep }: Props) {
 
           <div className={`flex items-center justify-between p-4 rounded-md border ${fourthStep === null ? 'bg-[#fff7ee] border-[#ffcd93]' : 'bg-white'}`}>
             <div>
-              <p className="uppercase text-[#3F3F3F] font-bold mb-1 text-sm">Agendamento</p>
+              <p className="uppercase text-[#3F3F3F] font-bold mb-1 text-sm">Pagamento</p>
               <p className="text-[#3F3F3F]">
                 {fourthStep === null ?
                   <span className="text-[#b45309] italic text-sm">Não preenchido</span> :

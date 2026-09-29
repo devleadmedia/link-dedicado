@@ -10,7 +10,7 @@ export function CheckoutProgress({ progress }: CheckoutprogresssProps) {
     { number: 1, label: "Titular" },
     { number: 2, label: "Extras" },
     { number: 3, label: "Instalação" },
-    { number: 4, label: "Agendamento" },
+    { number: 4, label: "Pagamento" },
     { number: 5, label: "Confirmação" },
   ] as const
 

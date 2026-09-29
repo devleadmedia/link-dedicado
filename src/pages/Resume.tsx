@@ -28,11 +28,6 @@ function parsePaymentMethod(value: string | null): "bankSlip" | "debitAuto" {
   return value === "automatic_debit" ? "debitAuto" : "bankSlip"
 }
 
-// API "manhã"/"tarde" (ou legado "MANHA"/"TARDE") → UI "morning"/"afternoon"
-function parsePeriod(value: string | null | undefined): "morning" | "afternoon" {
-  return (value === "tarde" || value === "TARDE") ? "afternoon" : "morning"
-}
-
 // API bank apiName → BankValue interno
 const bankApiNameToValue = Object.fromEntries(
   bankOptions.map((b) => [b.apiName, b.value]),
@@ -68,18 +63,8 @@ function hydrateCheckout(order: Order) {
     referencePoint: complement?.reference_point ?? undefined,
   })
 
-  // Step 4 — vencimento, pagamento e agendamento
-  const hasFourthStepData =
-    // order.due_day && // Comentado, reverter caso necessário
-    order.payment_method &&
-    order.installation_preferred_date_one &&
-    order.installation_preferred_period_one &&
-    order.installation_preferred_date_two &&
-    order.installation_preferred_period_two &&
-    order.installation_preferred_date_three &&
-    order.installation_preferred_period_three
-
-  if (hasFourthStepData) {
+  // Step 4 — vencimento e pagamento
+  if (order.payment_method) {
     const fourthStep: CheckoutFourthStep = {
       // dueDay: order.due_day as CheckoutFourthStep["dueDay"], // Comentado, reverter caso necessário
       ...(order.due_day ? { dueDay: order.due_day as CheckoutFourthStep["dueDay"] } : {}),
@@ -91,12 +76,6 @@ function hydrateCheckout(order: Order) {
       bankAccountHolderCpf: order.bank_account_holder_cpf
         ? formatCpf(order.bank_account_holder_cpf)
         : undefined,
-      firstOptionDate: parseApiDate(order.installation_preferred_date_one),
-      firstOptionPeriod: parsePeriod(order.installation_preferred_period_one),
-      secondOptionDate: parseApiDate(order.installation_preferred_date_two),
-      secondOptionPeriod: parsePeriod(order.installation_preferred_period_two),
-      thirdOptionDate: parseApiDate(order.installation_preferred_date_three),
-      thirdOptionPeriod: parsePeriod(order.installation_preferred_period_three),
     }
     saveFourthStep(fourthStep)
   }

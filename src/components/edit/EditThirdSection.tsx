@@ -1,7 +1,6 @@
 import { formatCpf } from "@/lib/cpf"
 import { bankOptions } from "@/lib/constants/banks"
-import { dueDayOptions, getInstallationDateOptions } from "../checkout/steps/shared/StepUtils"
-import { useMemo } from "react"
+import { dueDayOptions } from "../checkout/steps/shared/StepUtils"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
@@ -15,12 +14,6 @@ export type EditThirdSectionFormData = {
   account: string
   bankAccountHolderName: string
   bankAccountHolderCpf: string
-  firstOptionDate: string
-  firstOptionPeriod: string
-  secondOptionDate: string
-  secondOptionPeriod: string
-  thirdOptionDate: string
-  thirdOptionPeriod: string
 }
 
 type Props = {
@@ -29,33 +22,7 @@ type Props = {
   errors?: Partial<Record<keyof EditThirdSectionFormData, string>>
 }
 
-const installationOptions = [
-  {
-    title: "1ª opção",
-    dateField: "firstOptionDate" as const,
-    periodField: "firstOptionPeriod" as const,
-    dateId: "edit-first-option-date",
-    periodId: "edit-first-option-period",
-  },
-  {
-    title: "2ª opção",
-    dateField: "secondOptionDate" as const,
-    periodField: "secondOptionPeriod" as const,
-    dateId: "edit-second-option-date",
-    periodId: "edit-second-option-period",
-  },
-  {
-    title: "3ª opção",
-    dateField: "thirdOptionDate" as const,
-    periodField: "thirdOptionPeriod" as const,
-    dateId: "edit-third-option-date",
-    periodId: "edit-third-option-period",
-  },
-]
-
 export default function EditThirdSection({ form, onChange, errors = {} }: Props) {
-  const installationDateOptions = useMemo(() => getInstallationDateOptions(20), [])
-
   const handleChange = (field: keyof EditThirdSectionFormData) => (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -211,55 +178,6 @@ export default function EditThirdSection({ form, onChange, errors = {} }: Props)
           </div>
         </>
       )}
-
-      {installationOptions.map((option) => (
-        <div key={option.dateId} className="md:col-span-1">
-          <p className="text-[20px] font-bold mb-4">{option.title}</p>
-          <Label htmlFor={option.dateId} className="text-[16px] mb-2">Data</Label>
-          <Select
-            value={form[option.dateField]}
-            onValueChange={handleSelectChange(option.dateField)}>
-            <SelectTrigger
-              id={option.dateId}
-              className="w-full rounded-sm py-5 mb-2"
-              aria-invalid={Boolean(errors[option.dateField])}>
-              <SelectValue placeholder="Selecione" />
-            </SelectTrigger>
-            <SelectContent className="rounded-sm">
-              {installationDateOptions.map((dateOption) => (
-                <SelectItem
-                  key={dateOption.value}
-                  value={dateOption.value}
-                  disabled={dateOption.disabled}>
-                  {dateOption.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors[option.dateField] && (
-            <p className="text-xs text-red-600 mt-1 mb-2">{errors[option.dateField]}</p>
-          )}
-
-          <Label htmlFor={option.periodId} className="text-[16px] mb-2">Período</Label>
-          <Select
-            value={form[option.periodField]}
-            onValueChange={handleSelectChange(option.periodField)}>
-            <SelectTrigger
-              id={option.periodId}
-              className="w-full rounded-sm py-5"
-              aria-invalid={Boolean(errors[option.periodField])}>
-              <SelectValue placeholder="Selecione" />
-            </SelectTrigger>
-            <SelectContent className="rounded-sm">
-              <SelectItem value="morning">Manhã</SelectItem>
-              <SelectItem value="afternoon">Tarde</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors[option.periodField] && (
-            <p className="text-xs text-red-600 mt-1">{errors[option.periodField]}</p>
-          )}
-        </div>
-      ))}
     </div>
   )
 }

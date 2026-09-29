@@ -10,7 +10,7 @@ import { getOrderByToken, updateSecondCall } from "@/lib/api/orders"
 import { adoptConsultantHashFromOrder, getPartnerHashFromUrl } from "@/lib/partner-hash"
 import { bankOptions, type BankValue } from "@/lib/constants/banks"
 import { formatCpf } from "@/lib/cpf"
-import { formatApiDate, mapPaymentMethod, mapPeriod } from "@/lib/order-mappers"
+import { formatApiDate, mapPaymentMethod } from "@/lib/order-mappers"
 import type { Order } from "@/types/order"
 import type { Plan } from "@/types/plan"
 import { useEffect, useState } from "react"
@@ -28,11 +28,6 @@ function parseApiDate(value: string | null | undefined): string {
 function parsePaymentMethod(value: string | null | undefined): "bankSlip" | "debitAuto" | "" {
   if (!value) return ""
   return value === "automatic_debit" ? "debitAuto" : "bankSlip"
-}
-
-function parsePeriod(value: string | null | undefined): "morning" | "afternoon" | "" {
-  if (!value) return ""
-  return value === "tarde" || value === "TARDE" ? "afternoon" : "morning"
 }
 
 const bankApiNameToValue = Object.fromEntries(
@@ -82,12 +77,6 @@ const initialForm: EditFormData = {
   account: "",
   bankAccountHolderName: "",
   bankAccountHolderCpf: "",
-  firstOptionDate: "",
-  firstOptionPeriod: "",
-  secondOptionDate: "",
-  secondOptionPeriod: "",
-  thirdOptionDate: "",
-  thirdOptionPeriod: "",
   // Fourth section
   phone2: "",
   termsOfUse: false,
@@ -135,12 +124,6 @@ function buildInitialForm(order: Order): EditFormData {
     account: order.bank_account_number_second_call ?? order.bank_account_number ?? "",
     bankAccountHolderName: order.bank_account_holder_name_second_call ?? order.bank_account_holder_name ?? "",
     bankAccountHolderCpf: rawBankHolderCpf ? formatCpf(rawBankHolderCpf) : "",
-    firstOptionDate: parseApiDate(order.installation_preferred_date_one_second_call ?? order.installation_preferred_date_one),
-    firstOptionPeriod: parsePeriod(order.installation_preferred_period_one_second_call ?? order.installation_preferred_period_one),
-    secondOptionDate: parseApiDate(order.installation_preferred_date_two_second_call ?? order.installation_preferred_date_two),
-    secondOptionPeriod: parsePeriod(order.installation_preferred_period_two_second_call ?? order.installation_preferred_period_two),
-    thirdOptionDate: parseApiDate(order.installation_preferred_date_three_second_call ?? order.installation_preferred_date_three),
-    thirdOptionPeriod: parsePeriod(order.installation_preferred_period_three_second_call ?? order.installation_preferred_period_three),
     // Fourth section
     phone2: order.additional_phone_second_call ?? order.additional_phone ?? "",
     termsOfUse: order.terms_accepted_second_call ?? order.terms_accepted ?? false,
@@ -242,18 +225,6 @@ function CheckoutContent() {
         bank_account_holder_cpf: form.bankAccountHolderCpf
           ? form.bankAccountHolderCpf.replace(/\D/g, "")
           : undefined,
-        installation_preferred_date_one: form.firstOptionDate ? formatApiDate(form.firstOptionDate) : undefined,
-        installation_preferred_period_one: form.firstOptionPeriod
-          ? mapPeriod(form.firstOptionPeriod as "morning" | "afternoon")
-          : undefined,
-        installation_preferred_date_two: form.secondOptionDate ? formatApiDate(form.secondOptionDate) : undefined,
-        installation_preferred_period_two: form.secondOptionPeriod
-          ? mapPeriod(form.secondOptionPeriod as "morning" | "afternoon")
-          : undefined,
-        installation_preferred_date_three: form.thirdOptionDate ? formatApiDate(form.thirdOptionDate) : undefined,
-        installation_preferred_period_three: form.thirdOptionPeriod
-          ? mapPeriod(form.thirdOptionPeriod as "morning" | "afternoon")
-          : undefined,
         // Fourth section
         additional_phone: form.phone2 || undefined,
         terms_accepted: form.termsOfUse,
@@ -307,7 +278,7 @@ function CheckoutContent() {
               <div className="gap-4 py-4 border-b">
                 <p className="font-bold text-[#3F3F3F]">
                   <span className="text-[#525252] mr-2">3.</span>
-                  Agendamento
+                  Pagamento
                 </p>
                 <EditThirdSection
                   form={form}

@@ -1,12 +1,10 @@
 import { z } from "zod"
 import { isValidCpf } from "@/lib/cpf"
-import { isValidInstallationDate } from "@/components/checkout/steps/shared/StepUtils"
 import { bankOptions } from "@/lib/constants/banks"
 
 export const dueDayValues = ["1", "10", "17", "21", "26"] as const
 export const paymentMethodValues = ["bankSlip", "debitAuto"] as const
 export const bankValues = bankOptions.map((b) => b.value) as unknown as [string, ...string[]]
-export const periodValues = ["morning", "afternoon"] as const
 
 function toSelectString(value: unknown) {
   return value == null ? "" : String(value)
@@ -24,17 +22,6 @@ function requiredSelect(message: string) {
   return z.preprocess(
     toSelectString,
     z.string().trim().min(1, message),
-  )
-}
-
-function requiredInstallationDate() {
-  return z.preprocess(
-    toSelectString,
-    z
-      .string()
-      .trim()
-      .min(1, "Selecione a data")
-      .refine(isValidInstallationDate, "Selecione uma data disponível"),
   )
 }
 
@@ -56,24 +43,6 @@ export const fourthStepSchema = z
     account: z.preprocess(toOptionalString, z.string().trim().optional()),
     bankAccountHolderName: z.preprocess(toOptionalString, z.string().trim().optional()),
     bankAccountHolderCpf: z.preprocess(toOptionalString, z.string().trim().optional()),
-    firstOptionDate: requiredInstallationDate(),
-    firstOptionPeriod: requiredSelect("Selecione o período").refine(
-      (value): value is (typeof periodValues)[number] =>
-        periodValues.includes(value as (typeof periodValues)[number]),
-      "Selecione o período",
-    ),
-    secondOptionDate: requiredInstallationDate(),
-    secondOptionPeriod: requiredSelect("Selecione o período").refine(
-      (value): value is (typeof periodValues)[number] =>
-        periodValues.includes(value as (typeof periodValues)[number]),
-      "Selecione o período",
-    ),
-    thirdOptionDate: requiredInstallationDate(),
-    thirdOptionPeriod: requiredSelect("Selecione o período").refine(
-      (value): value is (typeof periodValues)[number] =>
-        periodValues.includes(value as (typeof periodValues)[number]),
-      "Selecione o período",
-    ),
   })
   .superRefine((data, ctx) => {
     if (data.paymentMethod !== "debitAuto") {
@@ -137,12 +106,6 @@ export type FourthStepFormInput = {
   account?: string
   bankAccountHolderName?: string
   bankAccountHolderCpf?: string
-  firstOptionDate: string
-  firstOptionPeriod: "" | FourthStepFormData["firstOptionPeriod"]
-  secondOptionDate: string
-  secondOptionPeriod: "" | FourthStepFormData["secondOptionPeriod"]
-  thirdOptionDate: string
-  thirdOptionPeriod: "" | FourthStepFormData["thirdOptionPeriod"]
 }
 
 export function getFourthStepFieldErrors(

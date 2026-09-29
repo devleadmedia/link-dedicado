@@ -162,3 +162,41 @@
     scroll-padding-top: 5rem;
     }
 }
+
+.nav {
+  gap: 34px;
+}
+
+.nav.flex-col {
+  gap: 0;
+}
+
+.nav a {
+  position: relative;
+  color: #1f1d1d;
+  font-size: 16px;
+  font-weight: 400;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.nav a::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  bottom: -6px;
+  height: 2px;
+  background: #5a088a;
+  transition: left 0.25s ease, right 0.25s ease;
+}
+
+.nav a:hover {
+  color: #5a088a;
+}
+
+.nav a:hover::after {
+  left: 0;
+  right: 0;
+}
