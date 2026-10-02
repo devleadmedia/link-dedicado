@@ -2,7 +2,8 @@ import { tryUpdateOrder } from "@/lib/order-actions"
 import { trackPlanSelected } from "@/lib/gtm"
 import { mapPlanUpdate } from "@/lib/order-mappers"
 import { savePlan } from "@/lib/plan-storage"
-import { getPartnerHashFromUrl, withPartnerPath } from "@/lib/partner-hash"
+import { getConsultantHashForPartner, getPartnerHashFromUrl, withPartnerPath } from "@/lib/partner-hash"
+import { getOrderSession } from "@/lib/order-storage"
 import type { Plan } from "@/types/plan"
 import type { NavigateFunction } from "react-router-dom"
 
@@ -11,7 +12,13 @@ function getCheckoutPath() {
     return withPartnerPath("/contratacao")
   }
 
-  return "/contratacao"
+  const partnerHash = getOrderSession()?.partnerHash
+  if (!partnerHash) return "/contratacao"
+
+  const consultantHash = getConsultantHashForPartner(partnerHash)
+  return consultantHash
+    ? `/${partnerHash}/${consultantHash}/contratacao`
+    : `/${partnerHash}/contratacao`
 }
 
 export async function selectPlanForCheckout(plan: Plan, navigate: NavigateFunction) {

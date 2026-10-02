@@ -1,4 +1,5 @@
 import { getOrderByToken } from "@/lib/api/orders"
+import { resolvePartner } from "@/lib/api/partner-resolver"
 import { clearCheckoutFlow } from "@/lib/clear-checkout-flow"
 import {
   saveFifthStep,
@@ -8,8 +9,8 @@ import {
 } from "@/lib/checkout-storage"
 import { bankOptions, type BankValue } from "@/lib/constants/banks"
 import { formatCpf } from "@/lib/cpf"
-import { saveOrderSession } from "@/lib/order-storage"
-import { adoptConsultantHashFromOrder, getPartnerHashFromUrl } from "@/lib/partner-hash"
+import { getOrderSession, saveOrderSession } from "@/lib/order-storage"
+import { adoptConsultantHashFromOrder, getPartnerHashFromUrl, withPartnerPath } from "@/lib/partner-hash"
 import type { Order } from "@/types/order"
 import type { CheckoutFourthStep } from "@/types/checkout"
 import { useEffect, useState } from "react"
@@ -36,6 +37,19 @@ const bankApiNameToValue = Object.fromEntries(
 function parseBankName(value: string | null | undefined): BankValue | undefined {
   if (!value) return undefined
   return bankApiNameToValue[value] as BankValue | undefined
+}
+
+function hashFromUrlValue(value: string | null | undefined) {
+  if (!value?.trim()) return null
+  try {
+    return getPartnerHashFromUrl(new URL(value, window.location.origin).pathname)
+  } catch {
+    return null
+  }
+}
+
+function partnerHashFromOrder(order: Order) {
+  return hashFromUrlValue(order.lp_url) ?? hashFromUrlValue(order.url)
 }
 
 function hydrateCheckout(order: Order) {
@@ -108,27 +122,55 @@ export default function Resume() {
     }
 
     getOrderByToken(token)
-      .then((data) => {
+      .then(async (data) => {
+        const order = data.partial_data
+        const stored = getOrderSession()
+        const sameStoredPartner =
+          order.partner_id != null && stored?.partnerId === order.partner_id
+
         clearCheckoutFlow()
+
+        let partnerHash =
+          getPartnerHashFromUrl()
+          ?? partnerHashFromOrder(order)
+          ?? (sameStoredPartner ? stored?.partnerHash ?? null : null)
+        let partnerLogoUrl = sameStoredPartner ? stored?.partnerLogoUrl ?? null : null
+        let partnerCnpj = sameStoredPartner ? stored?.partnerCnpj ?? null : null
+
+        if (!partnerHash && order.partner_id != null && order.zip_code) {
+          try {
+            const partner = await resolvePartner(order.zip_code)
+            if (partner?.partner_id === order.partner_id) {
+              partnerHash = partner.partner_hash
+              partnerLogoUrl = partner.logo_url ?? partnerLogoUrl
+              partnerCnpj = partner.cnpj ?? partnerCnpj
+            }
+          } catch {
+            // Keep the hash already recovered from the order or the session.
+          }
+        }
+
         adoptConsultantHashFromOrder(
-          data.partial_data.responsible_consultant,
-          getPartnerHashFromUrl(),
+          order.responsible_consultant,
+          partnerHash,
         )
 
         saveOrderSession({
           orderId: data.order_id,
           orderToken: data.order_token,
           expiresAt: data.order_token_expires_at,
-          partnerId: data.partial_data.partner_id,
-          partnerName: data.partial_data.business_partner ?? null,
-          partnerLogoUrl: null,
-          partnerHash: null,
-          partnerCnpj: null,
+          partnerId: order.partner_id,
+          partnerName: order.business_partner ?? null,
+          partnerLogoUrl,
+          partnerHash,
+          partnerCnpj,
         })
 
-        hydrateCheckout(data.partial_data)
+        hydrateCheckout(order)
 
-        window.location.replace("/#plans")
+        window.location.replace(
+          withPartnerPath("/#plans", partnerHash ? `/${partnerHash}` : "/"),
+        )
       })
       .catch(() => {
         setError("Não foi possível retomar o pedido. Verifique o link e tente novamente.")

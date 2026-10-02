@@ -73,6 +73,7 @@ export type Order = {
   client_type: "PF" | "PJ"
   landing_page: string
   url: string
+  lp_url?: string
   support: "whatsapp" | "ligacao" | null
 
   // Dados pessoais
