@@ -7,20 +7,16 @@ import {
 import {
   getFourthStep,
   getOrderNumber,
-  getSecondStep,
 } from "@/lib/checkout-storage"
 import { clearCheckoutFlow } from "@/lib/clear-checkout-flow"
-import { formatPrice, parsePrice } from "@/lib/price"
 import { getPlan } from "@/lib/plan-storage"
-import type { CheckoutFourthStep, CheckoutSecondStep } from "@/types/checkout"
-import { getSelectedExtraOptions, toLegacyExtra } from "@/lib/extras"
+import type { CheckoutFourthStep } from "@/types/checkout"
 import type { Plan } from "@/types/plan"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 type SuccessSummary = {
   plan: Plan | null
-  secondStep: CheckoutSecondStep | null
   fourthStep: CheckoutFourthStep | null
   orderNumber: string | null
 }
@@ -28,7 +24,6 @@ type SuccessSummary = {
 function readSuccessSummary(): SuccessSummary {
   return {
     plan: getPlan(),
-    secondStep: getSecondStep(),
     fourthStep: getFourthStep(),
     orderNumber: getOrderNumber(),
   }
@@ -37,7 +32,7 @@ function readSuccessSummary(): SuccessSummary {
 export default function Success() {
   const navigate = useNavigate()
   const [summary] = useState(readSuccessSummary)
-  const { plan, secondStep, fourthStep, orderNumber } = summary
+  const { plan, fourthStep, orderNumber } = summary
 
   useEffect(() => {
     if (!plan) {
@@ -47,16 +42,6 @@ export default function Success() {
 
     clearCheckoutFlow()
   }, [navigate, plan])
-
-  const selectedExtras = useMemo(() => {
-    const extraIds = secondStep?.extraIds ?? []
-
-    return getSelectedExtraOptions(extraIds, plan?.extras).map(toLegacyExtra)
-  }, [secondStep, plan?.extras])
-
-  const extrasTotal = useMemo(() => {
-    return selectedExtras.reduce((total, extra) => total + parsePrice(extra.price), 0)
-  }, [selectedExtras])
 
   if (!plan) {
     return null
@@ -119,20 +104,6 @@ export default function Success() {
                 )}
               </CheckoutDefaultCard>
             )}
-
-            <CheckoutDefaultCard className="mt-2">
-              <p className="text-xs mb-2">Pacotes Adicionais</p>
-              <div className="flex items-center justify-between">
-                <p className="text-[20px] font-bold">
-                  {selectedExtras.length > 0
-                    ? selectedExtras.map((extra) => extra.extra).join(", ")
-                    : "-"}
-                </p>
-                <p className="text-[14px] font-bold">
-                  R$ {formatPrice(extrasTotal)}/mês
-                </p>
-              </div>
-            </CheckoutDefaultCard>
 
             <CheckoutDefaultCard className="mt-2">
               <p className="text-xs mb-2">Forma de pagamento</p>

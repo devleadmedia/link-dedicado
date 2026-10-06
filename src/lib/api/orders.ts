@@ -17,11 +17,6 @@ export type SecondCallUpdateData = {
   mother_full_name?: string
   phone?: string
   email?: string
-  rg?: {
-    number: string
-    issuingAuthority: string
-    issueDate: string
-  }
   zip_code?: string
   address?: string
   address_number?: string

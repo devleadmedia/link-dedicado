@@ -1,4 +1,3 @@
-import { getSecondStep } from "@/lib/checkout-storage"
 import { getPlan } from "@/lib/plan-storage"
 import { getSelectedExtraOptions, toLegacyExtra } from "@/lib/extras"
 import { parsePrice } from "@/lib/price"
@@ -42,28 +41,14 @@ function toEcommerceItem(extra: Extras): EcommerceItem {
 
 export function buildOrderItems(): EcommerceItem[] {
   const plan = getPlan()
-  const secondStep = getSecondStep()
-  const items: EcommerceItem[] = []
+  if (!plan) return []
 
-  if (plan) {
-    items.push({
-      item_id: String(plan.id),
-      item_name: plan.name,
-      price: plan.monthlyPrice,
-      quantity: 1,
-    })
-  }
-
-  const selectedExtras = getSelectedExtraOptions(
-    secondStep?.extraIds ?? [],
-    plan?.extras,
-  ).map(toLegacyExtra)
-
-  for (const extra of selectedExtras) {
-    items.push(toEcommerceItem(extra))
-  }
-
-  return items
+  return [{
+    item_id: String(plan.id),
+    item_name: plan.name,
+    price: plan.monthlyPrice,
+    quantity: 1,
+  }]
 }
 
 export function getOrderTotalValue() {

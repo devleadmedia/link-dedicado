@@ -60,7 +60,7 @@ function hydrateCheckout(order: Order) {
     email: order.email ?? "",
   })
 
-  // Step 3 — endereço de instalação
+  // Etapa 2 — endereço de instalação
   const complement = order.address_complement
   saveThirdStep({
     cep: order.zip_code ?? "",
@@ -77,7 +77,7 @@ function hydrateCheckout(order: Order) {
     referencePoint: complement?.reference_point ?? undefined,
   })
 
-  // Step 4 — vencimento e pagamento
+  // Etapa 3 — vencimento e pagamento
   if (order.payment_method) {
     const fourthStep: CheckoutFourthStep = {
       // dueDay: order.due_day as CheckoutFourthStep["dueDay"], // Comentado, reverter caso necessário
@@ -94,14 +94,11 @@ function hydrateCheckout(order: Order) {
     saveFourthStep(fourthStep)
   }
 
-  // Step 5 — dados pessoais complementares
+  // Etapa 4 — dados pessoais complementares
   if (order.phone || order.cpf) {
     saveFifthStep({
       cpf: order.cpf ? formatCpf(order.cpf) : "",
       bornDate: parseApiDate(order.birth_date),
-      rg: order.rg?.number ?? "",
-      issuingAgency: order.rg?.issuingAuthority ?? "",
-      issuingDate: parseApiDate(order.rg?.issueDate),
       phone: order.phone ?? "",
       phone2: order.additional_phone ?? undefined,
       termsOfUse: order.terms_accepted ?? false,

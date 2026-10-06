@@ -1,6 +1,6 @@
 import DefaultLayout from "@/components/layout/default-layout/DefaultLayout";
 import { Button } from "@/components/ui/button";
-import { getFifthStep, getFirstStep, getFourthStep, getSecondStep, getThirdStep, saveOrderNumber } from "@/lib/checkout-storage";
+import { getFifthStep, getFirstStep, getFourthStep, getThirdStep, saveOrderNumber } from "@/lib/checkout-storage";
 import { useStep, type CheckoutStep } from "@/contexts/step/StepContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -30,7 +30,6 @@ export default function CheckoutSummary({ onEditStep }: Props) {
   const { setStep } = useStep()
   const navigate = useNavigate()
   const firstStep = getFirstStep()
-  const secondStep = getSecondStep()
   const thirdStep = getThirdStep()
   const fourthStep = getFourthStep()
   const fifthStep = getFifthStep()
@@ -96,25 +95,6 @@ export default function CheckoutSummary({ onEditStep }: Props) {
             </Button>
           </div>
 
-          <div className={`flex items-center justify-between p-4 rounded-md border ${secondStep === null ? 'bg-[#fff7ee] border-[#ffcd93]' : 'bg-white'}`}>
-            <div>
-              <p className="uppercase text-[#3F3F3F] font-bold mb-1 text-sm">Extras</p>
-              <p className="text-[#3F3F3F]">
-                {secondStep === null ?
-                  <span className="text-[#b45309] italic text-sm">Não preenchido</span> :
-                  secondStep.extraIds.length === 0
-                    ? 'Nenhum adicional selecionado'
-                    : `${secondStep.extraIds.length} adicional(is) selecionado(s)`}
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => handleEdit(2)}
-              className="bg-transparent rounded-sm border-[#6c4598] text-[#6c4598] cursor-pointer p-5 hover:bg-[#6c4598] hover:text-white">
-              {secondStep === null ? 'Preencher' : 'Editar'}
-            </Button>
-          </div>
-
           <div className={`flex items-center justify-between p-4 rounded-md border ${thirdStep === null ? 'bg-[#fff7ee] border-[#ffcd93]' : 'bg-white'}`}>
             <div>
               <p className="uppercase text-[#3F3F3F] font-bold mb-1 text-sm">Instalação</p>
@@ -126,7 +106,7 @@ export default function CheckoutSummary({ onEditStep }: Props) {
             </div>
             <Button
               variant="outline"
-              onClick={() => handleEdit(3)}
+              onClick={() => handleEdit(2)}
               className="bg-transparent rounded-sm border-[#6c4598] text-[#6c4598] cursor-pointer p-5 hover:bg-[#6c4598] hover:text-white">
               {thirdStep === null ? 'Preencher' : 'Editar'}
             </Button>
@@ -143,7 +123,7 @@ export default function CheckoutSummary({ onEditStep }: Props) {
             </div>
             <Button
               variant="outline"
-              onClick={() => handleEdit(4)}
+              onClick={() => handleEdit(3)}
               className="bg-transparent rounded-sm border-[#6c4598] text-[#6c4598] cursor-pointer p-5 hover:bg-[#6c4598] hover:text-white">
               {fourthStep === null ? 'Preencher' : 'Editar'}
             </Button>
@@ -160,7 +140,7 @@ export default function CheckoutSummary({ onEditStep }: Props) {
             </div>
             <Button
               variant="outline"
-              onClick={() => handleEdit(5)}
+              onClick={() => handleEdit(4)}
               className="bg-transparent rounded-sm border-[#6c4598] text-[#6c4598] cursor-pointer p-5 hover:bg-[#6c4598] hover:text-white">
               {fifthStep === null ? 'Preencher' : 'Editar'}
             </Button>

@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, type ReactNode } from "react"
 
-export type CheckoutStep = 1 | 2 | 3 | 4 | 5
+export type CheckoutStep = 1 | 2 | 3 | 4
 
-const TOTAL_STEPS = 5
+const TOTAL_STEPS = 4
 
 type StepContextValue = {
   step: CheckoutStep

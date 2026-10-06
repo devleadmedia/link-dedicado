@@ -154,7 +154,7 @@ export function App() {
             ))}
           </div>
           {showPagination && (
-            <div className="hidden md:flex items-center justify-end gap-2 mt-4">
+            <div className="flex items-center justify-end gap-2 mt-4">
               <button
                 type="button"
                 aria-label="Planos anteriores"

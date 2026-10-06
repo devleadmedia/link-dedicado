@@ -4,7 +4,6 @@ import type {
   CheckoutFirstStep,
   CheckoutFifthStep,
   CheckoutFourthStep,
-  CheckoutSecondStep,
   CheckoutThirdStep,
 } from "@/types/checkout"
 
@@ -15,7 +14,9 @@ function getCheckoutData(): CheckoutData {
   if (!raw) return {}
 
   try {
-    return JSON.parse(raw) as CheckoutData
+    const parsed = JSON.parse(raw) as CheckoutData & { secondStep?: unknown }
+    delete parsed.secondStep
+    return parsed
   } catch {
     return {}
   }
@@ -32,14 +33,6 @@ export function saveFirstStep(firstStep: CheckoutFirstStep) {
 
 export function getFirstStep(): CheckoutFirstStep | null {
   return getCheckoutData().firstStep ?? null
-}
-
-export function saveSecondStep(secondStep: CheckoutSecondStep) {
-  saveCheckoutData({ ...getCheckoutData(), secondStep })
-}
-
-export function getSecondStep(): CheckoutSecondStep | null {
-  return getCheckoutData().secondStep ?? null
 }
 
 export function saveThirdStep(thirdStep: CheckoutThirdStep) {
@@ -63,7 +56,14 @@ export function saveFifthStep(fifthStep: CheckoutFifthStep) {
 }
 
 export function getFifthStep(): CheckoutFifthStep | null {
-  return getCheckoutData().fifthStep ?? null
+  const fifthStep = getCheckoutData().fifthStep
+  if (!fifthStep) return null
+
+  const stored = { ...fifthStep } as CheckoutFifthStep & Record<string, unknown>
+  delete stored.rg
+  delete stored.issuingAgency
+  delete stored.issuingDate
+  return stored
 }
 
 export function saveOrderNumber(orderNumber: string) {

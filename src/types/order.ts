@@ -43,7 +43,6 @@ export type OrderManager = {
   birth_date?: string
   mother_full_name?: string
   legal_authorization?: boolean
-  rg?: OrderRg
 }
 
 export type OrderExtra = {
@@ -251,7 +250,6 @@ export type UpdateOrderPayload = Partial<{
   company_legal_name: string
   manager: OrderManager
   cpf: string
-  rg: OrderRg
   birth_date: string
   mother_full_name: string
   additional_phone: string | null

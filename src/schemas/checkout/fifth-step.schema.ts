@@ -27,9 +27,6 @@ export const fifthStepSchema = z.object({
       .refine(isValidCpf, "Informe um CPF válido"),
   ),
   bornDate: requiredString("Informe a data de nascimento"),
-  rg: requiredString("Informe o RG"),
-  issuingAgency: requiredString("Informe o órgão expedidor"),
-  issuingDate: requiredString("Informe a data de expedição"),
   phone: z.preprocess(
     toStringValue,
     z.string().trim().refine(isValidPhoneNumber, "Informe um telefone válido"),
@@ -51,9 +48,6 @@ export type FifthStepFormData = z.infer<typeof fifthStepSchema>
 export type FifthStepFormInput = {
   cpf: string
   bornDate: string
-  rg: string
-  issuingAgency: string
-  issuingDate: string
   phone: string
   phone2: string
   termsOfUse: boolean

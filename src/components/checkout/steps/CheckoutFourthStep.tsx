@@ -74,7 +74,7 @@ export default function CheckoutFourthStep() {
     try {
       saveFourthStep(result.data as CheckoutFourthStep)
       await tryUpdateOrder(mapFourthStepUpdate(result.data as CheckoutFourthStep))
-      trackCheckoutStep(4)
+      trackCheckoutStep(3)
 
       nextStep()
     } catch {

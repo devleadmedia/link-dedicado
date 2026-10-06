@@ -10,9 +10,6 @@ export type EditFirstSectionFormData = {
   motherName: string
   tel: string
   email: string
-  rg: string
-  issuingAgency: string
-  issuingDate: string
 }
 
 type Props = {
@@ -110,47 +107,6 @@ export default function EditFirstSection({ form, onChange, errors = {} }: Props)
         <p className="text-xs mt-1">E-mail para envio da fatura digital.</p>
         {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
       </div>
-
-      {/* <div className="col-span-2 md:col-span-1">
-        <Label htmlFor="edit-rg" className="text-sm mb-1 text-[#3F3F3F]">RG</Label>
-        <Input
-          type="text"
-          id="edit-rg"
-          className="rounded-sm py-5"
-          value={form.rg}
-          onChange={handleChange("rg")}
-          aria-invalid={Boolean(errors.rg)}
-        />
-        {errors.rg && <p className="text-xs text-red-600 mt-1">{errors.rg}</p>}
-      </div>
-
-      <div className="col-span-2 md:col-span-1">
-        <Label htmlFor="edit-issuingAgency" className="text-sm mb-1 text-[#3F3F3F]">Orgão Expedidor</Label>
-        <Input
-          type="text"
-          id="edit-issuingAgency"
-          className="rounded-sm py-5"
-          value={form.issuingAgency}
-          onChange={handleChange("issuingAgency")}
-          aria-invalid={Boolean(errors.issuingAgency)}
-        />
-        {errors.issuingAgency && <p className="text-xs text-red-600 mt-1">{errors.issuingAgency}</p>}
-      </div>
-
-      <div className="col-span-2 md:col-span-1">
-        <Label htmlFor="edit-issuingDate" className="text-sm mb-1 text-[#3F3F3F]">Data de Expedição</Label>
-        <Input
-          type="date"
-          id="edit-issuingDate"
-          className="rounded-sm py-5"
-          min="1900-01-01"
-          max="9999-12-31"
-          value={form.issuingDate}
-          onChange={handleChange("issuingDate")}
-          aria-invalid={Boolean(errors.issuingDate)}
-        />
-        {errors.issuingDate && <p className="text-xs text-red-600 mt-1">{errors.issuingDate}</p>}
-      </div> */}
     </div>
   )
 }

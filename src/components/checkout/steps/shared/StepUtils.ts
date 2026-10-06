@@ -4,20 +4,16 @@ export const stepTitleAndDescription: Record<number, StepTitleAndDescription> = 
     description: "Olá, vamos completar o seu pedido!",
   },
   2: {
-    title: "Pacotes Opcionais",
-    description: "Adicione Extras ao seu pedido",
-  },
-  3: {
     title: "Endereço de Instalação da Fibra",
     description: "Agora, você precisa completar o endereço",
   },
-  4: {
+  3: {
     title: "Dia de Vencimento da Fatura",
     description: "Qual é o dia de vencimento que melhor se adequa a sua necessidade?",
     secondTitle: "Agendar instalação",
     secondDescription: "Defina a melhor data para a instalação:",
   },
-  5: {
+  4: {
     title: "Dados Complementares",
     description: "Informe os dados pessoais abaixo",
     secondTitle: "Confirmação via SMS",

@@ -10,10 +10,6 @@ export type CheckoutFirstStep = {
   legalAuthorization?: boolean
 }
 
-export type CheckoutSecondStep = {
-  extraIds: string[]
-}
-
 export type CheckoutThirdStep = {
   cep: string
   number: string
@@ -42,9 +38,6 @@ export type CheckoutFourthStep = {
 export type CheckoutFifthStep = {
   cpf: string
   bornDate: string
-  rg: string
-  issuingAgency: string
-  issuingDate: string
   phone: string
   phone2?: string
   termsOfUse: boolean
@@ -53,7 +46,6 @@ export type CheckoutFifthStep = {
 
 export type CheckoutData = {
   firstStep?: CheckoutFirstStep
-  secondStep?: CheckoutSecondStep
   thirdStep?: CheckoutThirdStep
   fourthStep?: CheckoutFourthStep
   fifthStep?: CheckoutFifthStep

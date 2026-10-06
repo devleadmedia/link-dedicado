@@ -35,9 +35,6 @@ function generateOrderNumber(orderId?: number): string {
 const initialForm: FifthStepFormInput = {
   cpf: "",
   bornDate: "",
-  rg: "",
-  issuingAgency: "",
-  issuingDate: "",
   phone: "",
   phone2: "",
   termsOfUse: true,
@@ -103,7 +100,7 @@ export default function CheckoutFifthStep() {
 
       saveFifthStep(result.data)
       await tryUpdateOrder(mapFifthStepUpdate(result.data, orderNumber, firstStep))
-      trackCheckoutStep(5)
+      trackCheckoutStep(4)
       trackPurchase(orderNumber)
       await tryCloseOrder()
       saveOrderNumber(orderNumber)
@@ -152,54 +149,6 @@ export default function CheckoutFifthStep() {
           />
           {errors.bornDate && (
             <p className="text-xs text-red-600 mt-1">{errors.bornDate}</p>
-          )}
-        </div>
-
-        <div className="md:col-span-2">
-          <Label htmlFor="rg" className="text-[16px] mb-2">RG</Label>
-          <Input
-            type="text"
-            id="rg"
-            placeholder="00.000.000-0"
-            className="rounded-sm py-5"
-            value={form.rg}
-            onChange={handleChange("rg")}
-            aria-invalid={Boolean(errors.rg)}
-          />
-          {errors.rg && (
-            <p className="text-xs text-red-600 mt-1">{errors.rg}</p>
-          )}
-        </div>
-
-        <div className="md:col-span-2">
-          <Label htmlFor="issuingAgency" className="text-[16px] mb-2">Órgão Expedidor</Label>
-          <Input
-            type="text"
-            id="issuingAgency"
-            className="rounded-sm py-5"
-            value={form.issuingAgency}
-            onChange={handleChange("issuingAgency")}
-            aria-invalid={Boolean(errors.issuingAgency)}
-          />
-          {errors.issuingAgency && (
-            <p className="text-xs text-red-600 mt-1">{errors.issuingAgency}</p>
-          )}
-        </div>
-
-        <div className="md:col-span-2">
-          <Label htmlFor="issuingDate" className="text-[16px] mb-2">Data de Expedição</Label>
-          <Input
-            type="date"
-            id="issuingDate"
-            className="rounded-sm py-5"
-            min="1900-01-01"
-            max="9999-12-31"
-            value={form.issuingDate}
-            onChange={handleChange("issuingDate")}
-            aria-invalid={Boolean(errors.issuingDate)}
-          />
-          {errors.issuingDate && (
-            <p className="text-xs text-red-600 mt-1">{errors.issuingDate}</p>
           )}
         </div>
       </div>

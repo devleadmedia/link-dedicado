@@ -53,9 +53,6 @@ const initialForm: EditFormData = {
   motherName: "",
   tel: "",
   email: "",
-  rg: "",
-  issuingAgency: "",
-  issuingDate: "",
   // Second section
   cep: "",
   number: "",
@@ -88,7 +85,6 @@ function buildInitialForm(order: Order): EditFormData {
   const rawPaymentMethod = order.payment_method_second_call ?? order.payment_method
   const rawBankName = order.bank_name_second_call ?? order.bank_name
   const rawBornDate = order.birth_date_second_call ?? order.birth_date
-  const rawIssuingDate = order.rg_issue_date_second_call ?? order.rg?.issueDate
   const rawCpf = order.cpf_second_call ?? order.cpf
   const rawBankHolderCpf = order.bank_account_holder_cpf_second_call ?? order.bank_account_holder_cpf
 
@@ -100,9 +96,6 @@ function buildInitialForm(order: Order): EditFormData {
     motherName: order.mother_full_name_second_call ?? order.mother_full_name ?? "",
     tel: order.phone_second_call ?? order.phone ?? "",
     email: order.email_second_call ?? order.email ?? "",
-    rg: order.rg_second_call ?? order.rg?.number ?? "",
-    issuingAgency: order.rg_issuer_second_call ?? order.rg?.issuingAuthority ?? "",
-    issuingDate: parseApiDate(rawIssuingDate),
     // Second section
     cep: order.zip_code_second_call ?? order.zip_code ?? "",
     number: order.address_number_second_call ?? order.address_number ?? "",

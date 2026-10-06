@@ -12,18 +12,15 @@ import { getCepAddress } from "@/lib/cep-storage"
 import { sanitizeCpf } from "@/lib/cpf"
 import { sanitizeCnpj } from "@/lib/cnpj"
 import { toTitleCase } from "@/lib/text"
-import { getSelectedExtraOptions } from "@/lib/extras"
 import type { CepAddressData } from "@/types/cep-address"
 import type { CheckoutFirstStep, CheckoutFourthStep, CheckoutThirdStep } from "@/types/checkout"
 import type { FifthStepFormData } from "@/schemas/checkout/fifth-step.schema"
-import type { SecondStepFormData } from "@/schemas/checkout/second-step.schema"
 import type {
   CreateOrderPayload,
   OrderAddressComplement,
   PartnerData,
   UpdateOrderPayload,
 } from "@/types/order"
-import type { ProductExtras } from "@/types/extras"
 import type { Plan } from "@/types/plan"
 import type { EmailVerificationResult } from "@/lib/api/verification"
 
@@ -173,33 +170,6 @@ export function mapFirstStepUpdate(
   }
 }
 
-export function mapSecondStepUpdate(
-  data: SecondStepFormData,
-  planPrice: number,
-  originalPrice?: number,
-  extras?: ProductExtras,
-): UpdateOrderPayload {
-  const selectedExtras = getSelectedExtraOptions(data.extraIds, extras).map((option) => ({
-    id: option.id,
-    label: option.label,
-    description: option.label,
-    price: option.price,
-    bonus: null as null,
-  }))
-
-  const extrasPrice = selectedExtras.reduce((total, extra) => total + extra.price, 0)
-
-  return {
-    selected_extras: selectedExtras,
-    price_summary: {
-      plan_price: planPrice,
-      original_price: originalPrice ?? planPrice,
-      extras_price: extrasPrice,
-      total_monthly: planPrice + extrasPrice,
-    },
-  }
-}
-
 export function mapThirdStepUpdate(data: CheckoutThirdStep): UpdateOrderPayload {
   const cepAddress = getCepAddress()
   const addressComplement = mapCheckoutThirdStepComplement(data, cepAddress)
@@ -240,11 +210,6 @@ export function mapFifthStepUpdate(
   return {
     cpf: sanitizeCpf(data.cpf),
     birth_date: formatApiDate(data.bornDate),
-    rg: {
-      number: data.rg.trim(),
-      issuingAuthority: data.issuingAgency.trim().toUpperCase(),
-      issueDate: formatApiDate(data.issuingDate),
-    },
     additional_phone: data.phone2?.trim() || null,
     order_number: orderNumber,
     terms_accepted: data.termsOfUse,

@@ -130,7 +130,7 @@ export default function CheckoutThirdStep() {
     try {
       saveThirdStep(result.data)
       await tryUpdateOrder(mapThirdStepUpdate(result.data))
-      trackCheckoutStep(3)
+      trackCheckoutStep(2)
 
       nextStep()
     } catch {
