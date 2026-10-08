@@ -369,7 +369,7 @@ export default function CepModal() {
             onClick={handleSubmit}
             disabled={isSubmitting || isLoadingCep}
             className="text-xs font-bold bg-[#F3426C] rounded-full py-4 px-18 hover:bg-[#F3426C]/80 duration-300 cursor-pointer mt-4 disabled:opacity-60">
-            {isSubmitting ? "Consultando..." : "Consultar Planos Fibra"}
+            {isSubmitting ? "Consultando..." : "Consultar Planos"}
           </Button>
         </div>
       </div>

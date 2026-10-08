@@ -2,15 +2,15 @@ import CheckoutDefaultCard from "@/components/checkout/default-card/CheckoutDefa
 import OrderSummary from "@/components/checkout/order-summary/OrderSummary"
 import EditFirstSection, { type EditFirstSectionFormData } from "@/components/edit/EditFirstSection"
 import EditSecondSection, { type EditSecondSectionFormData } from "@/components/edit/EditSecondSection"
-import EditThirdSection, { type EditThirdSectionFormData } from "@/components/edit/EditThirdSection"
 import EditFourthSection, { type EditFourthSectionFormData } from "@/components/edit/EditFourthSection"
 import DefaultLayout from "@/components/layout/default-layout/DefaultLayout"
 import { StepProvider } from "@/contexts/step/StepContext"
 import { getOrderByToken, updateSecondCall } from "@/lib/api/orders"
+import { fetchProducts } from "@/lib/api/products"
 import { adoptConsultantHashFromOrder, getPartnerHashFromUrl } from "@/lib/partner-hash"
-import { bankOptions, type BankValue } from "@/lib/constants/banks"
 import { formatCpf } from "@/lib/cpf"
-import { formatApiDate, mapPaymentMethod } from "@/lib/order-mappers"
+import { formatApiDate } from "@/lib/order-mappers"
+import { formatPrice } from "@/lib/price"
 import type { Order } from "@/types/order"
 import type { Plan } from "@/types/plan"
 import { useEffect, useState } from "react"
@@ -25,25 +25,7 @@ function parseApiDate(value: string | null | undefined): string {
   return `${year}-${month}-${day}`
 }
 
-function parsePaymentMethod(value: string | null | undefined): "bankSlip" | "debitAuto" | "" {
-  if (!value) return ""
-  return value === "automatic_debit" ? "debitAuto" : "bankSlip"
-}
-
-const bankApiNameToValue = Object.fromEntries(
-  bankOptions.map((b) => [b.apiName, b.value]),
-) as Record<string, BankValue>
-
-const bankValueToApiName = Object.fromEntries(
-  bankOptions.map((b) => [b.value, b.apiName]),
-) as Record<string, string>
-
-function parseBankName(value: string | null | undefined): string {
-  if (!value) return ""
-  return bankApiNameToValue[value] ?? ""
-}
-
-type EditFormData = EditFirstSectionFormData & EditSecondSectionFormData & EditThirdSectionFormData & EditFourthSectionFormData
+type EditFormData = EditFirstSectionFormData & EditSecondSectionFormData & EditFourthSectionFormData
 
 const initialForm: EditFormData = {
   // First section
@@ -66,27 +48,41 @@ const initialForm: EditFormData = {
   dwellingType: "building",
   complement: "",
   referencePoint: "",
-  // Third section
-  dueDay: "",
-  paymentMethod: "",
-  bank: "",
-  agency: "",
-  account: "",
-  bankAccountHolderName: "",
-  bankAccountHolderCpf: "",
-  // Fourth section
+  // Confirmation section
   phone2: "",
   termsOfUse: false,
   communication: false,
 }
 
+function planFromOrder(order: Order): Plan | null {
+  if (!order.plan) return null
+
+  const planPrice = order.price_summary?.plan_price ?? order.plan.value
+  const totalMonthly = order.price_summary?.total_monthly ?? planPrice
+
+  return {
+    id: Number(order.plan.id),
+    name: order.plan.name,
+    offerTitle: order.plan.speed || order.plan.name,
+    offerSubtitle: null,
+    badge: null,
+    category: "",
+    monthlyPrice: totalMonthly,
+    formattedPrice: formatPrice(planPrice),
+    installationPrice: 0,
+    details: [],
+    promoDetails: [],
+    extras: { client: [], non_client: [] },
+    uf: [],
+    online: true,
+    company_id: order.company_id,
+  }
+}
+
 function buildInitialForm(order: Order): EditFormData {
   const complement = order.address_complement_second_call ?? order.address_complement
-  const rawPaymentMethod = order.payment_method_second_call ?? order.payment_method
-  const rawBankName = order.bank_name_second_call ?? order.bank_name
   const rawBornDate = order.birth_date_second_call ?? order.birth_date
   const rawCpf = order.cpf_second_call ?? order.cpf
-  const rawBankHolderCpf = order.bank_account_holder_cpf_second_call ?? order.bank_account_holder_cpf
 
   return {
     // First section
@@ -109,15 +105,7 @@ function buildInitialForm(order: Order): EditFormData {
     informQuadraLote: Boolean(complement?.square || complement?.lot),
     quadra: complement?.square ?? "",
     lote: complement?.lot ?? "",
-    // Third section
-    dueDay: order.due_day_second_call ?? order.due_day ?? "",
-    paymentMethod: parsePaymentMethod(rawPaymentMethod),
-    bank: parseBankName(rawBankName),
-    agency: order.bank_branch_second_call ?? order.bank_branch ?? "",
-    account: order.bank_account_number_second_call ?? order.bank_account_number ?? "",
-    bankAccountHolderName: order.bank_account_holder_name_second_call ?? order.bank_account_holder_name ?? "",
-    bankAccountHolderCpf: rawBankHolderCpf ? formatCpf(rawBankHolderCpf) : "",
-    // Fourth section
+    // Confirmation section
     phone2: order.additional_phone_second_call ?? order.additional_phone ?? "",
     termsOfUse: order.terms_accepted_second_call ?? order.terms_accepted ?? false,
     communication: order.accept_offers_second_call ?? order.accept_offers ?? false,
@@ -142,33 +130,44 @@ function CheckoutContent() {
       return
     }
 
+    let cancelled = false
+
     getOrderByToken(token)
       .then((data) => {
+        if (cancelled) return
+
         const order = data.partial_data
+        const summary = planFromOrder(order)
         setPartnerId(order.partner_id)
         adoptConsultantHashFromOrder(order.responsible_consultant, getPartnerHashFromUrl())
         setForm(buildInitialForm(order))
-        if (order.plan) {
-          setPlan({
-            id: Number(order.plan.id),
-            name: order.plan.name,
-            offerTitle: order.plan.speed,
-            offerSubtitle: null,
-            badge: null,
-            category: "",
-            monthlyPrice: order.plan.value,
-            formattedPrice: order.plan.value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-            installationPrice: 0,
-            details: [],
-            promoDetails: [],
-            extras: { client: [], non_client: [] },
-            uf: [],
-            online: true,
-            company_id: 0,
+        setPlan(summary)
+        setIsLoading(false)
+
+        if (!summary) return
+
+        void fetchProducts()
+          .then((catalog) => {
+            if (cancelled) return
+
+            const match = catalog.find((item) => item.id === summary.id)
+            if (!match?.details.length) return
+
+            setPlan((current) =>
+              current?.id === summary.id
+                ? { ...current, details: match.details }
+                : current,
+            )
           })
-        }
+          .catch(() => {})
       })
-      .finally(() => setIsLoading(false))
+      .catch(() => {
+        if (!cancelled) setIsLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
   }, [token])
 
   const handleChange = (field: keyof EditFormData, value: string | boolean) => {
@@ -206,19 +205,8 @@ function CheckoutContent() {
           square: form.quadra || null,
           lot: form.lote || null,
         },
-        // Third section
-        due_day: form.dueDay ? String(form.dueDay) : undefined,
-        payment_method: form.paymentMethod
-          ? mapPaymentMethod(form.paymentMethod as "bankSlip" | "debitAuto")
-          : undefined,
-        bank_name: form.bank ? (bankValueToApiName[form.bank] ?? form.bank) : undefined,
-        bank_branch: form.agency || undefined,
-        bank_account_number: form.account || undefined,
-        bank_account_holder_name: form.bankAccountHolderName || undefined,
-        bank_account_holder_cpf: form.bankAccountHolderCpf
-          ? form.bankAccountHolderCpf.replace(/\D/g, "")
-          : undefined,
-        // Fourth section
+        payment_method: "boleto",
+        // Confirmation section
         additional_phone: form.phone2 || undefined,
         terms_accepted: form.termsOfUse,
         accept_offers: form.communication,
@@ -234,10 +222,11 @@ function CheckoutContent() {
   }
 
   return (
-    <DefaultLayout className="w-full my-10 lg:flex lg:gap-8">
-      <div className="w-full max-w-175 mb-9 lg:w-2/3">
+    <div className="relative min-h-[calc(100dvh-5rem)] overflow-x-hidden bg-[#EAEAEA]">
+    <DefaultLayout className="my-10 w-full min-w-0 lg:flex lg:items-start lg:gap-8">
+      <div className="mb-9 w-full min-w-0 max-w-175 lg:w-2/3">
         <CheckoutDefaultCard>
-          <h1 className="text-[20px] font-bold text-[#3F3F3F]">Cadastro Vivo Fibra</h1>
+          <h1 className="text-[20px] font-bold text-[#3F3F3F]">Cadastro Link Dedicado</h1>
           <p className="text-sm text-[#525252]">Preencha ou corrija os dados abaixo para contratar seu plano.</p>
 
           {isLoading ? (
@@ -271,18 +260,6 @@ function CheckoutContent() {
               <div className="gap-4 py-4 border-b">
                 <p className="font-bold text-[#3F3F3F]">
                   <span className="text-[#525252] mr-2">3.</span>
-                  Pagamento
-                </p>
-                <EditThirdSection
-                  form={form}
-                  onChange={handleChange}
-                  errors={errors}
-                />
-              </div>
-
-              <div className="gap-4 py-4 border-b">
-                <p className="font-bold text-[#3F3F3F]">
-                  <span className="text-[#525252] mr-2">4.</span>
                   Confirmação
                 </p>
                 <EditFourthSection
@@ -314,11 +291,12 @@ function CheckoutContent() {
       </div>
 
       {plan && (
-        <div className="w-full lg:w-1/3">
-          <OrderSummary plan={plan} className="mt-0" />
+        <div className="w-full min-w-0 lg:w-1/3">
+          <OrderSummary plan={plan} className="mt-6 lg:mt-0" />
         </div>
       )}
     </DefaultLayout>
+    </div>
   )
 }
 

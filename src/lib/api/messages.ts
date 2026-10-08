@@ -5,7 +5,7 @@ import {
   VIVO_LANDING_PAGE,
 } from "@/lib/constants/vivo"
 import { getCepAddress } from "@/lib/cep-storage"
-import { parsePhoneNumber } from "@/lib/phone"
+import { toInternationalPhoneDigits } from "@/lib/phone"
 import { resolvePartner } from "@/lib/api/partner-resolver"
 import { getOrderSession } from "@/lib/order-storage"
 
@@ -67,7 +67,7 @@ export async function buildTalkToUsPayload(
     category: VIVO_CATEGORY,
     landing_page: VIVO_LANDING_PAGE,
     name: data.name.trim(),
-    phone: parsePhoneNumber(data.phone).localNumber,
+    phone: toInternationalPhoneDigits(data.phone),
     email: data.email.trim(),
     subject: "Contato via site",
     message: data.message.trim(),

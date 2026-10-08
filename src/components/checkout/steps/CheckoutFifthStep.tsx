@@ -100,7 +100,7 @@ export default function CheckoutFifthStep() {
 
       saveFifthStep(result.data)
       await tryUpdateOrder(mapFifthStepUpdate(result.data, orderNumber, firstStep))
-      trackCheckoutStep(4)
+      trackCheckoutStep(3)
       trackPurchase(orderNumber)
       await tryCloseOrder()
       saveOrderNumber(orderNumber)

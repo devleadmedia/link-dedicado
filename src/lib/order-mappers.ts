@@ -148,6 +148,7 @@ export function mapPlanUpdate(plan: Plan, extrasPrice = 0): UpdateOrderPayload {
       extras_price: extrasPrice,
       total_monthly: plan.monthlyPrice + extrasPrice,
     },
+    payment_method: "boleto",
   }
 }
 
@@ -216,6 +217,7 @@ export function mapFifthStepUpdate(
     accept_offers: data.communication,
     is_consultation: false,
     is_order: true,
+    payment_method: "boleto",
     manager: {
       name: toTitleCase(firstStep.fullName),
       cpf: sanitizeCpf(data.cpf),

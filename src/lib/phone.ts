@@ -55,6 +55,11 @@ export function parsePhoneNumber(value: string): {
   return { country: DEFAULT_PHONE_COUNTRY, localNumber: digits }
 }
 
+export function toInternationalPhoneDigits(value: string): string {
+  const parsed = parsePhoneNumber(value)
+  return buildFullPhoneNumber(parsed.country, parsed.localNumber)
+}
+
 export function isValidPhoneNumber(value: string): boolean {
   const digits = value.replace(/\D/g, "")
   if (!digits) return false

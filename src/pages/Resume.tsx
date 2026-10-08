@@ -3,16 +3,13 @@ import { resolvePartner } from "@/lib/api/partner-resolver"
 import { clearCheckoutFlow } from "@/lib/clear-checkout-flow"
 import {
   saveFifthStep,
-  saveFourthStep,
   saveFirstStep,
   saveThirdStep,
 } from "@/lib/checkout-storage"
-import { bankOptions, type BankValue } from "@/lib/constants/banks"
 import { formatCpf } from "@/lib/cpf"
 import { getOrderSession, saveOrderSession } from "@/lib/order-storage"
 import { adoptConsultantHashFromOrder, getPartnerHashFromUrl, withPartnerPath } from "@/lib/partner-hash"
 import type { Order } from "@/types/order"
-import type { CheckoutFourthStep } from "@/types/checkout"
 import { useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 
@@ -22,21 +19,6 @@ function parseApiDate(value: string | null | undefined): string {
   if (parts.length !== 3) return value
   const [day, month, year] = parts
   return `${year}-${month}-${day}`
-}
-
-// API "boleto"/"automatic_debit" → UI "bankSlip"/"debitAuto"
-function parsePaymentMethod(value: string | null): "bankSlip" | "debitAuto" {
-  return value === "automatic_debit" ? "debitAuto" : "bankSlip"
-}
-
-// API bank apiName → BankValue interno
-const bankApiNameToValue = Object.fromEntries(
-  bankOptions.map((b) => [b.apiName, b.value]),
-) as Record<string, BankValue>
-
-function parseBankName(value: string | null | undefined): BankValue | undefined {
-  if (!value) return undefined
-  return bankApiNameToValue[value] as BankValue | undefined
 }
 
 function hashFromUrlValue(value: string | null | undefined) {
@@ -77,24 +59,7 @@ function hydrateCheckout(order: Order) {
     referencePoint: complement?.reference_point ?? undefined,
   })
 
-  // Etapa 3 — vencimento e pagamento
-  if (order.payment_method) {
-    const fourthStep: CheckoutFourthStep = {
-      // dueDay: order.due_day as CheckoutFourthStep["dueDay"], // Comentado, reverter caso necessário
-      ...(order.due_day ? { dueDay: order.due_day as CheckoutFourthStep["dueDay"] } : {}),
-      paymentMethod: parsePaymentMethod(order.payment_method),
-      bank: parseBankName(order.bank_name),
-      agency: order.bank_branch ?? undefined,
-      account: order.bank_account_number ?? undefined,
-      bankAccountHolderName: order.bank_account_holder_name ?? undefined,
-      bankAccountHolderCpf: order.bank_account_holder_cpf
-        ? formatCpf(order.bank_account_holder_cpf)
-        : undefined,
-    }
-    saveFourthStep(fourthStep)
-  }
-
-  // Etapa 4 — dados pessoais complementares
+  // Confirmação — dados pessoais complementares
   if (order.phone || order.cpf) {
     saveFifthStep({
       cpf: order.cpf ? formatCpf(order.cpf) : "",

@@ -1,30 +1,21 @@
 import CheckoutDefaultCard from "@/components/checkout/default-card/CheckoutDefaultCard"
 import DefaultLayout from "@/components/layout/default-layout/DefaultLayout"
-import {
-  getPlanBenefitDetail,
-  paymentMethodLabels,
-} from "@/components/checkout/steps/shared/StepUtils"
-import {
-  getFourthStep,
-  getOrderNumber,
-} from "@/lib/checkout-storage"
+import { getPlanBenefitDetail } from "@/components/checkout/steps/shared/StepUtils"
+import { getOrderNumber } from "@/lib/checkout-storage"
 import { clearCheckoutFlow } from "@/lib/clear-checkout-flow"
 import { getPlan } from "@/lib/plan-storage"
-import type { CheckoutFourthStep } from "@/types/checkout"
 import type { Plan } from "@/types/plan"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 type SuccessSummary = {
   plan: Plan | null
-  fourthStep: CheckoutFourthStep | null
   orderNumber: string | null
 }
 
 function readSuccessSummary(): SuccessSummary {
   return {
     plan: getPlan(),
-    fourthStep: getFourthStep(),
     orderNumber: getOrderNumber(),
   }
 }
@@ -32,7 +23,7 @@ function readSuccessSummary(): SuccessSummary {
 export default function Success() {
   const navigate = useNavigate()
   const [summary] = useState(readSuccessSummary)
-  const { plan, fourthStep, orderNumber } = summary
+  const { plan, orderNumber } = summary
 
   useEffect(() => {
     if (!plan) {
@@ -49,9 +40,7 @@ export default function Success() {
 
   const download = getPlanBenefitDetail(plan.details, "download")
   const upload = getPlanBenefitDetail(plan.details, "upload")
-  const paymentMethod = fourthStep
-    ? paymentMethodLabels[fourthStep.paymentMethod]
-    : "-"
+  const paymentMethod = "Boleto Bancário"
 
   return (
     <div className="bg-[#EAEAEA]">
@@ -78,7 +67,10 @@ export default function Success() {
               <p className="text-xs mb-2">Plano escolhido</p>
               <div className="flex items-center justify-between">
                 <p className="text-[20px] font-bold">{plan.offerTitle}</p>
-                <p className="text-[14px] font-bold">Por R$ {plan.formattedPrice}/mês</p>
+                <div className="text-right">
+                  <p className="text-[14px] font-bold">Por R$ {plan.formattedPrice}/mês</p>
+                  <p className="text-xs text-[#525252]">No boleto</p>
+                </div>
               </div>
             </CheckoutDefaultCard>
 

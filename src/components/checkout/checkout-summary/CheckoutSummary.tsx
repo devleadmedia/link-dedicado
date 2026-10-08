@@ -1,10 +1,10 @@
 import DefaultLayout from "@/components/layout/default-layout/DefaultLayout";
 import { Button } from "@/components/ui/button";
-import { getFifthStep, getFirstStep, getFourthStep, getThirdStep, saveOrderNumber } from "@/lib/checkout-storage";
+import { getFifthStep, getFirstStep, getThirdStep, saveOrderNumber } from "@/lib/checkout-storage";
 import { useStep, type CheckoutStep } from "@/contexts/step/StepContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { tryCloseOrder } from "@/lib/order-actions";
+import { tryCloseOrder, tryUpdateOrder } from "@/lib/order-actions";
 import { trackPurchase } from "@/lib/gtm";
 import { getOrderSession } from "@/lib/order-storage";
 
@@ -31,7 +31,6 @@ export default function CheckoutSummary({ onEditStep }: Props) {
   const navigate = useNavigate()
   const firstStep = getFirstStep()
   const thirdStep = getThirdStep()
-  const fourthStep = getFourthStep()
   const fifthStep = getFifthStep()
 
   function handleEdit(step: CheckoutStep) {
@@ -43,7 +42,6 @@ export default function CheckoutSummary({ onEditStep }: Props) {
     const missing: string[] = []
     if (firstStep === null) missing.push('Titular')
     if (thirdStep === null) missing.push('Instalação')
-    if (fourthStep === null) missing.push('Pagamento')
     if (fifthStep === null) missing.push('Confirmação')
 
     if (missing.length > 0) {
@@ -58,6 +56,7 @@ export default function CheckoutSummary({ onEditStep }: Props) {
       const session = getOrderSession()
       const orderNumber = generateOrderNumber(session?.orderId)
       trackPurchase(orderNumber)
+      await tryUpdateOrder({ payment_method: "boleto" })
       await tryCloseOrder()
       saveOrderNumber(orderNumber)
       navigate('/sucesso')
@@ -112,23 +111,6 @@ export default function CheckoutSummary({ onEditStep }: Props) {
             </Button>
           </div>
 
-          <div className={`flex items-center justify-between p-4 rounded-md border ${fourthStep === null ? 'bg-[#fff7ee] border-[#ffcd93]' : 'bg-white'}`}>
-            <div>
-              <p className="uppercase text-[#3F3F3F] font-bold mb-1 text-sm">Pagamento</p>
-              <p className="text-[#3F3F3F]">
-                {fourthStep === null ?
-                  <span className="text-[#b45309] italic text-sm">Não preenchido</span> :
-                  `${fourthStep.paymentMethod === 'bankSlip' ? 'Boleto Bancário' : 'Débito Automático'}${fourthStep.dueDay ? ` · Vencimento dia ${fourthStep.dueDay}` : ''}`}
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => handleEdit(3)}
-              className="bg-transparent rounded-sm border-[#6c4598] text-[#6c4598] cursor-pointer p-5 hover:bg-[#6c4598] hover:text-white">
-              {fourthStep === null ? 'Preencher' : 'Editar'}
-            </Button>
-          </div>
-
           <div className={`flex items-center justify-between p-4 rounded-md border ${fifthStep === null ? 'bg-[#fff7ee] border-[#ffcd93]' : 'bg-white'}`}>
             <div>
               <p className="uppercase text-[#3F3F3F] font-bold mb-1 text-sm">Confirmação</p>
@@ -140,7 +122,7 @@ export default function CheckoutSummary({ onEditStep }: Props) {
             </div>
             <Button
               variant="outline"
-              onClick={() => handleEdit(4)}
+              onClick={() => handleEdit(3)}
               className="bg-transparent rounded-sm border-[#6c4598] text-[#6c4598] cursor-pointer p-5 hover:bg-[#6c4598] hover:text-white">
               {fifthStep === null ? 'Preencher' : 'Editar'}
             </Button>

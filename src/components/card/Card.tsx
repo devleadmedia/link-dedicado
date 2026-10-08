@@ -83,6 +83,7 @@ export default function Card({ plan }: CardProps) {
               {plan.formattedPrice}
               <span className="text-[20px]">/mês</span>
             </p>
+            <p className="text-sm text-[#525252] mt-1">No boleto</p>
           </div>
 
           <Button

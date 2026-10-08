@@ -1,5 +1,6 @@
 import CheckoutDefaultCard from "../default-card/CheckoutDefaultCard"
 import { formatPrice } from "@/lib/price"
+import { cn } from "@/lib/utils"
 import type { Plan } from "@/types/plan"
 
 type OrderSummaryProps = {
@@ -9,7 +10,7 @@ type OrderSummaryProps = {
 
 export default function OrderSummary({ plan, className }: OrderSummaryProps) {
   return (
-    <CheckoutDefaultCard className={`w-full mt-9 text-[#3F3F3F] sticky top-4${className ? ` ${className}` : ""}`}>
+    <CheckoutDefaultCard className={cn("mt-9 w-full sticky top-4 text-[#3F3F3F]", className)}>
       <h2 className="text-[20px] font-bold text-center mb-6">Meu Plano</h2>
 
       <div className="space-y-4">
@@ -20,6 +21,7 @@ export default function OrderSummary({ plan, className }: OrderSummaryProps) {
             R$ {plan.formattedPrice}
             <span className="text-xs font-normal">/mês</span>
           </p>
+          <p className="text-xs text-[#525252] mt-1">No boleto</p>
         </div>
 
         {(plan.details?.length ?? 0) > 0 && (

@@ -8,7 +8,6 @@ import { CheckoutProgress } from "@/components/checkout/progress-bar/CheckoutPro
 import CheckoutDefaultCard from "@/components/checkout/default-card/CheckoutDefaultCard"
 import CheckoutFirstStep from "@/components/checkout/steps/CheckoutFirstStep"
 import CheckoutThirdStep from "@/components/checkout/steps/CheckoutThirdStep"
-import CheckoutFourthStep from "@/components/checkout/steps/CheckoutFourthStep"
 import CheckoutFifthStep from "@/components/checkout/steps/CheckoutFifthStep"
 import OrderSummary from "@/components/checkout/order-summary/OrderSummary"
 import CheckoutSummary from "@/components/checkout/checkout-summary/CheckoutSummary"
@@ -36,8 +35,7 @@ function CheckoutContent({ isTransbordo }: { isTransbordo: boolean }) {
           <CheckoutDefaultCard>
             {step === 1 && <CheckoutFirstStep />}
             {step === 2 && <CheckoutThirdStep />}
-            {step === 3 && <CheckoutFourthStep />}
-            {step === 4 && <CheckoutFifthStep />}
+            {step === 3 && <CheckoutFifthStep />}
           </CheckoutDefaultCard>
         </div>
 
