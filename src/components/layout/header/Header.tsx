@@ -5,8 +5,15 @@ import { usePartner } from "@/hooks/use-partner-id"
 import { withPartnerPath } from "@/lib/partner-hash"
 import VivoEmpresasLogo from "@/components/layout/VivoEmpresasLogo"
 
-function isCheckoutPath(pathname: string) {
-  return pathname === "/contratacao" || pathname.endsWith("/contratacao")
+function isContractFlowPath(pathname: string) {
+  return (
+    pathname === "/contratacao" ||
+    pathname.endsWith("/contratacao") ||
+    pathname === "/editar" ||
+    pathname.endsWith("/editar") ||
+    pathname === "/retomar" ||
+    pathname.endsWith("/retomar")
+  )
 }
 
 const NAV_ITEMS = [
@@ -30,7 +37,7 @@ export default function Header() {
   const { partnerName, partnerLogoUrl } = usePartner()
   const { pathname } = useLocation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const showNav = !isCheckoutPath(pathname)
+  const showNav = !isContractFlowPath(pathname)
   const homePath = withPartnerPath("/")
 
   const handleNavClick = (hash: string) => (event: MouseEvent<HTMLAnchorElement>) => {
@@ -45,21 +52,16 @@ export default function Header() {
 
   if (!showNav) {
     return (
-      <header className={HEADER_CLASS_NAME}>
-        <div className="container max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between">
-            <Link to={homePath} className="inline-flex shrink-0">
-              <VivoEmpresasLogo />
-            </Link>
-            {partnerLogoUrl && (
-              <img
-                src={partnerLogoUrl}
-                alt={partnerName ?? "Parceiro"}
-                className="hidden h-[39px] w-auto md:block"
-              />
-            )}
-          </div>
-        </div>
+      <header className="sticky top-0 z-40 flex w-full items-center justify-center bg-[#6D0089] py-3">
+        <Link to={homePath} className="inline-flex">
+          <img
+            src="/logo-vivo-modal.png"
+            alt="Vivo Parceiro Autorizado"
+            width={103}
+            height={41}
+            className="block h-auto w-[103px] max-w-none shrink-0"
+          />
+        </Link>
       </header>
     )
   }

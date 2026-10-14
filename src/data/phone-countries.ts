@@ -7,6 +7,16 @@ export type PhoneCountry = {
   validateLocalNumber: (localNumber: string) => boolean
 }
 
+const INTERNATIONAL_MAX_LOCAL_DIGITS = 15
+
+function isInternationalLocalNumber(localNumber: string) {
+  return (
+    /^\d+$/.test(localNumber) &&
+    localNumber.length >= 8 &&
+    localNumber.length <= INTERNATIONAL_MAX_LOCAL_DIGITS
+  )
+}
+
 export const phoneCountries: PhoneCountry[] = [
   {
     code: "BR",
@@ -21,16 +31,16 @@ export const phoneCountries: PhoneCountry[] = [
     name: "Estados Unidos",
     dialCode: "1",
     flag: "🇺🇸",
-    maxLocalDigits: 10,
-    validateLocalNumber: (localNumber) => /^\d{10}$/.test(localNumber),
+    maxLocalDigits: INTERNATIONAL_MAX_LOCAL_DIGITS,
+    validateLocalNumber: isInternationalLocalNumber,
   },
   {
     code: "PT",
     name: "Portugal",
     dialCode: "351",
     flag: "🇵🇹",
-    maxLocalDigits: 9,
-    validateLocalNumber: (localNumber) => /^\d{9}$/.test(localNumber),
+    maxLocalDigits: INTERNATIONAL_MAX_LOCAL_DIGITS,
+    validateLocalNumber: isInternationalLocalNumber,
   },
 ]
 
