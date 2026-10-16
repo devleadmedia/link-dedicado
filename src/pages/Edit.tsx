@@ -8,7 +8,7 @@ import { StepProvider } from "@/contexts/step/StepContext"
 import { getOrderByToken, updateSecondCall } from "@/lib/api/orders"
 import { fetchProducts } from "@/lib/api/products"
 import { adoptConsultantHashFromOrder, getPartnerHashFromUrl } from "@/lib/partner-hash"
-import { formatCpf } from "@/lib/cpf"
+import { formatCpf, sanitizeCpf } from "@/lib/cpf"
 import { formatApiDate } from "@/lib/order-mappers"
 import { formatPrice } from "@/lib/price"
 import type { Order } from "@/types/order"
@@ -185,12 +185,14 @@ function CheckoutContent() {
 
     try {
       await updateSecondCall(token, {
-        // First section
-        full_name: form.fullName || undefined,
-        cpf: form.cpf.replace(/\D/g, "") || undefined,
+        // First section — PJ: dados do gestor
+        manager: {
+          name: form.fullName || undefined,
+          cpf: sanitizeCpf(form.cpf) || undefined,
+          phone: form.tel || undefined,
+          email: form.email || undefined,
+        },
         birth_date: form.bornDate ? formatApiDate(form.bornDate) : undefined,
-        phone: form.tel || undefined,
-        email: form.email || undefined,
         // Second section
         zip_code: form.cep || undefined,
         address: form.address || undefined,

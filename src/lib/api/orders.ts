@@ -10,13 +10,17 @@ import type {
   UpdateOrderPayload,
 } from "@/types/order"
 
-export type SecondCallUpdateData = {
-  full_name?: string
+export type SecondCallManagerData = {
+  name?: string
   cpf?: string
-  birth_date?: string
-  mother_full_name?: string
   phone?: string
   email?: string
+}
+
+export type SecondCallUpdateData = {
+  manager?: SecondCallManagerData
+  birth_date?: string
+  mother_full_name?: string
   zip_code?: string
   address?: string
   address_number?: string

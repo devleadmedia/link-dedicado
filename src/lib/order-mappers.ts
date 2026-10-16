@@ -209,7 +209,6 @@ export function mapFifthStepUpdate(
   firstStep: CheckoutFirstStep,
 ): UpdateOrderPayload {
   return {
-    cpf: sanitizeCpf(data.cpf),
     birth_date: formatApiDate(data.bornDate),
     additional_phone: data.phone2?.trim() || null,
     order_number: orderNumber,
