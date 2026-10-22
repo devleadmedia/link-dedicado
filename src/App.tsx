@@ -11,7 +11,6 @@ import { useLocation, useSearchParams } from "react-router-dom"
 import { getOrderByToken } from "./lib/api/orders"
 import { saveOrderSession } from "@/lib/order-storage"
 import { adoptConsultantHashFromOrder, getPartnerHashFromUrl } from "@/lib/partner-hash"
-import { HERO_PLAN_ID } from "@/lib/constants/vivo"
 import { HomeTable } from "./components/home-table/HomeTable"
 import FAQ from "./components/faq/FAQ"
 
@@ -128,7 +127,7 @@ export function App() {
   return (
     <main>
       {/* <Bubble /> Temporariamente desabilitado: robô de disparo ainda não está pronto */}
-      <Hero plan={plans.find((plan) => plan.id === HERO_PLAN_ID) ?? null} />
+      <Hero plan={plans.find((plan) => /^500\s*mega$/i.test(plan.offerTitle.trim())) ?? null} />
 
       <div className="bg-[#F6F6F9] pt-10 w-full">
         <DefaultLayout className="pb-16">

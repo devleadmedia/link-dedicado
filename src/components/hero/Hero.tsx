@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Check } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import DefaultLayout from "../layout/default-layout/DefaultLayout"
 import { Button } from "../ui/button"
@@ -13,12 +14,11 @@ export default function Hero({ plan }: HeroProps) {
   const navigate = useNavigate()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const [priceReais, priceCentavos = "00"] = plan?.formattedPrice.split(",") ?? [
-    "100",
-    "00",
-  ]
-  const planSpeed = plan?.offerTitle.split(" ")[0] ?? "500Mega"
-  const planSpeedLabel = plan?.offerTitle.split(" ")[1] ?? "Mega"
+  const [priceReais, priceCentavos = "00"] = plan?.formattedPrice.split(",") ?? ["", ""]
+  const [planSpeed = "500", planSpeedLabel = "Mega"] = plan?.offerTitle.trim().split(/\s+/) ?? []
+  const priceClassName = priceReais.length > 3
+    ? "text-[40px] md:text-[46px]"
+    : "text-[52px] md:text-[58px]"
 
   const handleContract = async () => {
     if (!plan) return
@@ -33,67 +33,66 @@ export default function Hero({ plan }: HeroProps) {
   }
 
   return (
-    <div className="overflow-hidden bg-[#660099] text-white md:bg-[url('/hero-bg.png')] md:bg-cover md:bg-center md:bg-no-repeat">
-      <DefaultLayout className="flex flex-col items-center justify-between mb-4 md:mb-0 md:flex-row">
-        <div className="font-heading flex flex-col justify-center items-center gap-4 pt-15 max-w-140 md:items-start md:justify-start md:pb-15">
-
-          <div className="text-center md:text-left">
-            <h1 className="font-bold text-4xl">
-              Internet Dedicada
+    <div className="overflow-hidden bg-[#F6F6F8] text-[#010103]">
+      <DefaultLayout className="flex flex-col items-center justify-between gap-2 md:flex-row md:items-end">
+        <div className="flex w-full max-w-xl flex-col items-center gap-5 py-8 text-center md:items-start md:py-10 md:text-left">
+          <div>
+            <h1 className="text-[28px] font-bold leading-[1.15] md:text-[34px]">
+              Internet Fibra
             </h1>
-            <h2 className="text-3xl">
-              Conexão privada, segura e otimizada para as operações da sua empresa
+            <h2 className="text-[28px] font-normal leading-[1.15] md:text-[34px]">
+              Temos o plano ideal
+              <br />
+              para a sua empresa
             </h2>
           </div>
 
           <div className="flex items-center">
-
-            <div className="flex flex-col items-center pr-4 border-r border-[#ffffff]">
-              <h3 className="font-bold text-6xl/10 w-max py-2 md:px-4">
+            <div className="border-r border-[#010103] pr-4">
+              <h3 className="text-[46px] font-bold leading-[0.9] md:text-[54px]">
                 {planSpeed}
-                <span className="block text-[42px]">{planSpeedLabel}</span>
+                <span className="mt-1 block text-[34px] leading-none md:text-[40px]">{planSpeedLabel}</span>
               </h3>
             </div>
 
-            <div className="flex flex-col items-center pl-4">
-              <div className="relative flex items-center">
-                <div className="flex flex-col">
-                  <p className="uppercase text-[8px] text-left">Por <span className="block">apenas</span></p>
-                  <p className="text-lg font-bold">R$</p>
+            <div className="pl-4">
+              <div className="flex items-center">
+                <div className="flex flex-col items-start leading-none">
+                  <p className="text-[8px] font-medium uppercase">Por</p>
+                  <p className="text-[8px] font-medium uppercase">apenas</p>
+                  <p className="mt-0.5 text-lg font-bold">R$</p>
                 </div>
 
-                <p className="text-[56px] font-bold">{priceReais}</p>
+                <p className={`${priceClassName} font-bold leading-none`}>{priceReais || "—"}</p>
 
-                <div className="flex flex-col items-center">
-                  <p className="text-lg font-bold">,{priceCentavos}</p>
+                <div className="flex flex-col items-start leading-none">
+                  <p className="text-lg font-bold">{priceCentavos ? `,${priceCentavos}` : ""}</p>
                   <p className="text-sm">/Mês</p>
                 </div>
               </div>
-              <div className="flex justify-center items-center w-full text-center">
-                <p className="relative -top-4 text-[10px] max-w-40 text-center">
-                  {plan?.offerSubtitle}
-                </p>
-              </div>
-            </div>
 
+              <p className="mt-1 flex items-center gap-1.5 text-[13px] md:text-sm">
+                <Check className="size-3.5 shrink-0 stroke-[2.5]" aria-hidden="true" />
+                Instalação e Wi-Fi Grátis
+              </p>
+            </div>
           </div>
 
           <Button
             type="button"
             onClick={handleContract}
             disabled={!plan || isSubmitting}
-            className="text-[20px] font-bold bg-[#E73871] rounded-full py-[28px] px-18 hover:bg-[#E73871]/80 duration-300 cursor-pointer disabled:opacity-60">
+            className="h-10 rounded-full bg-[#E73871] px-8 text-base font-semibold text-white hover:bg-[#E73871]/80 duration-300 cursor-pointer disabled:opacity-60"
+          >
             {isSubmitting ? "Contratando..." : "Contratar agora"}
           </Button>
-
         </div>
 
-        {/* <div className="block relative mt-4 md:top-3 md:mt-0">
-          <img
-            src="/top-image-pj.webp"
-            alt="Empresa conectada"
-          />
-        </div> */}
+        <img
+          src="/hero-man.png"
+          alt="Homem consultando a oferta de internet no celular"
+          className="hidden h-auto w-auto object-contain object-bottom md:block md:h-[310px]"
+        />
       </DefaultLayout>
     </div>
   )
