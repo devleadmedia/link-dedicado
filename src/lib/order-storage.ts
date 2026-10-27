@@ -11,6 +11,7 @@ export type OrderSession = {
   expiresAt?: string
   partnerId: number | null
   partnerName: string | null
+  partnerLegalName?: string | null
   partnerLogoUrl: string | null
   partnerHash?: string | null
   partnerCnpj?: string | null
@@ -24,6 +25,7 @@ export function toPartnerSessionFields(partner: PartnerData | null) {
   return {
     partnerId: partner?.partner_id ?? null,
     partnerName: partner?.partner_name ?? null,
+    partnerLegalName: partner?.company_legal_name ?? null,
     partnerLogoUrl: partner?.logo_url ?? null,
     partnerHash: partner?.partner_hash ?? getPartnerHashFromUrl(),
     partnerCnpj: partner?.cnpj ?? null,

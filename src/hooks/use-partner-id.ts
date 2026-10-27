@@ -5,6 +5,7 @@ import { getOrderSession, ORDER_SESSION_EVENT } from "@/lib/order-storage"
 type PartnerSession = {
   partnerId: number | null
   partnerName: string | null
+  partnerLegalName: string | null
   partnerLogoUrl: string | null
   partnerCnpj: string | null
 }
@@ -14,6 +15,7 @@ function readPartnerSession(): PartnerSession {
   return {
     partnerId: session?.partnerId ?? null,
     partnerName: session?.partnerName ?? null,
+    partnerLegalName: session?.partnerLegalName ?? null,
     partnerLogoUrl: session?.partnerLogoUrl ?? null,
     partnerCnpj: session?.partnerCnpj ?? null,
   }

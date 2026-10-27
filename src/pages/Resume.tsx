@@ -98,6 +98,7 @@ export default function Resume() {
           ?? (sameStoredPartner ? stored?.partnerHash ?? null : null)
         let partnerLogoUrl = sameStoredPartner ? stored?.partnerLogoUrl ?? null : null
         let partnerCnpj = sameStoredPartner ? stored?.partnerCnpj ?? null : null
+        let partnerLegalName = sameStoredPartner ? stored?.partnerLegalName ?? null : null
 
         if (!partnerHash && order.partner_id != null && order.zip_code) {
           try {
@@ -106,6 +107,7 @@ export default function Resume() {
               partnerHash = partner.partner_hash
               partnerLogoUrl = partner.logo_url ?? partnerLogoUrl
               partnerCnpj = partner.cnpj ?? partnerCnpj
+              partnerLegalName = partner.company_legal_name ?? partnerLegalName
             }
           } catch {
             // Keep the hash already recovered from the order or the session.
@@ -123,6 +125,7 @@ export default function Resume() {
           expiresAt: data.order_token_expires_at,
           partnerId: order.partner_id,
           partnerName: order.business_partner ?? null,
+          partnerLegalName,
           partnerLogoUrl,
           partnerHash,
           partnerCnpj,

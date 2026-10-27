@@ -291,6 +291,7 @@ export type PartnerData = {
   partner_id: number
   partner_name: string
   partner_hash: string
+  company_legal_name?: string | null
   logo_url?: string
   cnpj?: string
   email?: string

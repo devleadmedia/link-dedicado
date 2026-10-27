@@ -1,5 +1,5 @@
-import { CircleArrowLeft, CircleArrowRight } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 import Card from "./components/card/Card"
 import Hero from "./components/hero/Hero"
 import DefaultLayout from "./components/layout/default-layout/DefaultLayout"
@@ -14,12 +14,16 @@ import { adoptConsultantHashFromOrder, getPartnerHashFromUrl } from "@/lib/partn
 import { HomeTable } from "./components/home-table/HomeTable"
 import FAQ from "./components/faq/FAQ"
 
+const CAROUSEL_BUTTON_CLASS =
+  "flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#5a088a] bg-white text-[#5a088a] shadow-[0_3px_10px_rgba(90,8,138,0.35)] transition-[background-color,box-shadow,color] duration-200 hover:bg-[#5a088a] hover:text-white hover:shadow-[0_5px_15px_rgba(90,8,138,0.5)] disabled:pointer-events-none disabled:opacity-40"
+
 export function App() {
   const [plans, setPlans] = useState<Plan[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [currentPage, setCurrentPage] = useState(0)
-  const [cardsPerPage, setCardsPerPage] = useState(4)
+  const [canScrollPrev, setCanScrollPrev] = useState(false)
+  const [canScrollNext, setCanScrollNext] = useState(false)
+  const cardsContainerRef = useRef<HTMLDivElement>(null)
   const [searchParams] = useSearchParams()
   const { hash } = useLocation()
   const token = searchParams.get("token")
@@ -44,6 +48,7 @@ export function App() {
           expiresAt: data.order_token_expires_at,
           partnerId: null,
           partnerName: null,
+          partnerLegalName: null,
           partnerLogoUrl: null,
           partnerHash: null,
           partnerCnpj: null,
@@ -82,29 +87,47 @@ export function App() {
   }, [])
 
   useEffect(() => {
-    const updateCardsPerPage = () => {
-      if (window.matchMedia("(min-width: 1024px)").matches) {
-        setCardsPerPage(4)
-        return
-      }
+    const container = cardsContainerRef.current
+    if (!container) return
 
-      if (window.matchMedia("(min-width: 768px)").matches) {
-        setCardsPerPage(3)
-        return
-      }
+    container.scrollLeft = 0
 
-      setCardsPerPage(1)
+    const updateScrollState = () => {
+      const maxScroll = container.scrollWidth - container.clientWidth
+      setCanScrollPrev(container.scrollLeft > 4)
+      setCanScrollNext(container.scrollLeft < maxScroll - 4)
     }
 
-    updateCardsPerPage()
-    window.addEventListener("resize", updateCardsPerPage)
+    updateScrollState()
+    container.addEventListener("scroll", updateScrollState, { passive: true })
+    const observer = new ResizeObserver(updateScrollState)
+    observer.observe(container)
 
-    return () => window.removeEventListener("resize", updateCardsPerPage)
-  }, [])
+    return () => {
+      container.removeEventListener("scroll", updateScrollState)
+      observer.disconnect()
+    }
+  }, [plans])
 
-  useEffect(() => {
-    setCurrentPage(0)
-  }, [plans, cardsPerPage])
+  const scrollByCard = (direction: -1 | 1) => {
+    const container = cardsContainerRef.current
+    if (!container) return
+
+    const cards = Array.from(container.querySelectorAll<HTMLElement>("[data-plan-card]"))
+    if (cards.length === 0) return
+
+    const foundIndex = cards.findIndex((card) => card.offsetLeft >= container.scrollLeft - 4)
+    const currentIndex = foundIndex === -1 ? cards.length - 1 : foundIndex
+    const nextCard = cards[currentIndex + direction]
+    if (!nextCard) return
+
+    const delta = nextCard.offsetLeft - container.scrollLeft
+    if (Math.abs(delta) < 1) return
+
+    container.scrollBy({ left: delta, behavior: "smooth" })
+  }
+
+  const showCarouselButtons = canScrollPrev || canScrollNext
 
   useEffect(() => {
     const sectionId = hash.replace("#", "")
@@ -116,13 +139,6 @@ export function App() {
 
     return () => window.clearTimeout(timeout)
   }, [hash])
-
-  const totalPages = Math.ceil(plans.length / cardsPerPage)
-  const visiblePlans = useMemo(
-    () => plans.slice(currentPage * cardsPerPage, (currentPage + 1) * cardsPerPage),
-    [plans, currentPage, cardsPerPage],
-  )
-  const showPagination = !isLoading && !error && plans.length > 0
 
   return (
     <main>
@@ -147,30 +163,33 @@ export function App() {
             <p className="text-center text-[#525252]">Nenhum plano disponível no momento.</p>
           )}
 
-          <div className="grid grid-cols-1 justify-items-center md:grid-cols-3 md:justify-items-stretch lg:grid-cols-4 gap-4" id="plans">
-            {visiblePlans.map((plan) => (
+          <div
+            ref={cardsContainerRef}
+            id="plans"
+            className="relative flex snap-x snap-mandatory flex-nowrap gap-4 overflow-x-auto scroll-smooth pt-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            {plans.map((plan) => (
               <Card key={plan.id} plan={plan} />
             ))}
           </div>
-          {showPagination && (
-            <div className="flex items-center justify-end gap-2 mt-4">
+          {showCarouselButtons && (
+            <div className="mt-4 flex items-center justify-end gap-[10px]">
               <button
                 type="button"
-                aria-label="Planos anteriores"
-                disabled={currentPage === 0}
-                onClick={() => setCurrentPage((page) => page - 1)}
-                className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-30"
+                aria-label="Plano anterior"
+                disabled={!canScrollPrev}
+                onClick={() => scrollByCard(-1)}
+                className={CAROUSEL_BUTTON_CLASS}
               >
-                <CircleArrowLeft color="#3F3F3F" size={38} strokeWidth={1.5} />
+                <ChevronLeft size={22} strokeWidth={2.25} />
               </button>
               <button
                 type="button"
-                aria-label="Próximos planos"
-                disabled={currentPage >= totalPages - 1}
-                onClick={() => setCurrentPage((page) => page + 1)}
-                className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-30"
+                aria-label="Próximo plano"
+                disabled={!canScrollNext}
+                onClick={() => scrollByCard(1)}
+                className={CAROUSEL_BUTTON_CLASS}
               >
-                <CircleArrowRight color="#3F3F3F" size={38} strokeWidth={1.5} />
+                <ChevronRight size={22} strokeWidth={2.25} />
               </button>
             </div>
           )}

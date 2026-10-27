@@ -25,7 +25,7 @@ export default function Card({ plan }: CardProps) {
   }
   return (
 
-    <div className="relative bg-white rounded-4xl px-6 pt-9 w-full max-w-65 text-[#1F1C1C] overflow-hidden">
+    <div data-plan-card className="relative snap-start shrink-0 bg-white rounded-4xl px-6 pt-9 w-full max-w-65 text-[#1F1C1C] overflow-hidden">
       <div className="flex flex-col justify-between h-full">
         <div>
           {plan.badge && (
@@ -90,7 +90,7 @@ export default function Card({ plan }: CardProps) {
             type="button"
             onClick={handleContract}
             disabled={isSubmitting}
-            className="text-lg font-bold bg-[#cb2166] rounded-full w-full p-6 mb-4 hover:bg-[#cb2166]/80 duration-300 cursor-pointer disabled:opacity-60">
+            className="mb-4 h-auto w-full cursor-pointer rounded-[25px] border-0 bg-[#cb2166] px-[15px] py-[10px] text-[18px] font-semibold leading-normal hover:bg-[#cb2166] hover:brightness-[1.08] disabled:opacity-60">
             {isSubmitting ? "Contratando..." : "Contratar agora"}
           </Button>
         </div>

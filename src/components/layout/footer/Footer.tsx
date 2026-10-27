@@ -8,9 +8,14 @@ import VivoEmpresasLogo from "@/components/layout/VivoEmpresasLogo";
 
 export function Footer({ setIsTalkToUsOpen }: { setIsTalkToUsOpen: (isOpen: boolean) => void }) {
   const navigate = useNavigate();
-  const { partnerName, partnerLogoUrl, partnerCnpj } = usePartner();
+  const { partnerName, partnerLegalName, partnerLogoUrl, partnerCnpj } = usePartner();
   const privacyPath = withPartnerPath("/politica-de-privacidade");
   const formattedCnpj = partnerCnpj ? formatCnpj(partnerCnpj) : null;
+  const partnerLabel = partnerLegalName?.trim() || partnerName?.trim() || null;
+  const partnerLine = [
+    partnerLabel,
+    formattedCnpj ? `CNPJ ${formattedCnpj}` : null,
+  ].filter(Boolean).join(" - ");
 
   return (
     <footer className="bg-white">
@@ -25,24 +30,20 @@ export function Footer({ setIsTalkToUsOpen }: { setIsTalkToUsOpen: (isOpen: bool
       </div>
 
       <DefaultLayout>
-        <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-32">
-          <div className="flex items-center gap-8">
-            <VivoEmpresasLogo />
+        <div className="flex flex-col items-center justify-center gap-2 md:flex-row md:gap-8">
+          <VivoEmpresasLogo />
 
-            {partnerLogoUrl && (
-              <img
-                className="my-4 w-auto h-[39px]"
-                src={partnerLogoUrl}
-                alt={partnerName ?? "Parceiro"} />
-            )}
-          </div>
-
-          {(partnerName || formattedCnpj) && (
+          {partnerLine && (
             <p className="text-xs text-center max-w-120 text-[#747474]">
-              {partnerName && `${partnerName} - Parceiro Vivo Empresa`}
-              {partnerName && formattedCnpj && <br />}
-              {formattedCnpj}
+              {partnerLine}
             </p>
+          )}
+
+          {partnerLogoUrl && (
+            <img
+              className="my-4 w-auto h-[39px]"
+              src={partnerLogoUrl}
+              alt={partnerLabel ?? "Parceiro"} />
           )}
         </div>
       </DefaultLayout>
