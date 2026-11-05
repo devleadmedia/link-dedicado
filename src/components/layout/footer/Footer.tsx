@@ -29,8 +29,8 @@ export function Footer({ setIsTalkToUsOpen }: { setIsTalkToUsOpen: (isOpen: bool
         </DefaultLayout>
       </div>
 
-      <DefaultLayout>
-        <div className="flex flex-col items-center justify-center gap-2 md:flex-row md:gap-8">
+      <DefaultLayout className="py-6 md:py-4">
+        <div className="flex flex-col items-center justify-center gap-6 md:flex-row md:gap-8">
           <VivoEmpresasLogo />
 
           {partnerLine && (
@@ -41,7 +41,7 @@ export function Footer({ setIsTalkToUsOpen }: { setIsTalkToUsOpen: (isOpen: bool
 
           {partnerLogoUrl && (
             <img
-              className="my-4 w-auto h-[39px]"
+              className="h-[39px] w-auto object-contain"
               src={partnerLogoUrl}
               alt={partnerLabel ?? "Parceiro"} />
           )}

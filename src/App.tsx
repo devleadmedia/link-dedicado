@@ -11,6 +11,7 @@ import { useLocation, useSearchParams } from "react-router-dom"
 import { getOrderByToken } from "./lib/api/orders"
 import { saveOrderSession } from "@/lib/order-storage"
 import { adoptConsultantHashFromOrder, getPartnerHashFromUrl } from "@/lib/partner-hash"
+import { HERO_PLAN_ID } from "@/lib/constants/vivo"
 import { HomeTable } from "./components/home-table/HomeTable"
 import FAQ from "./components/faq/FAQ"
 
@@ -143,7 +144,7 @@ export function App() {
   return (
     <main>
       {/* <Bubble /> Temporariamente desabilitado: robô de disparo ainda não está pronto */}
-      <Hero plan={plans.find((plan) => /^500\s*mega$/i.test(plan.offerTitle.trim())) ?? null} />
+      <Hero plan={plans.find((plan) => plan.id === HERO_PLAN_ID) ?? null} />
 
       <div className="bg-[#F6F6F9] pt-10 w-full">
         <DefaultLayout className="pb-16">
@@ -211,7 +212,7 @@ export function App() {
           <div className="mt-8">
             <h3 className="text-center mb-1 text-[20px] font-semibold md:text-[26px] text-[#505050]">Link Dedicado é ideal para <strong>empresas que não podem parar.</strong></h3>
 
-            <div className="max-w-200 m-auto grid grid-cols-3 gap-4 mt-4 md:grid-cols-6">
+            <div className="max-w-200 m-auto grid grid-cols-2 gap-4 mt-4 md:grid-cols-6">
               {ICONS.map((icon) => (
                 <div key={icon.title} className="flex flex-col items-center gap-2">
                   <div className="bg-white rounded-full p-4 w-15 h-15 flex items-center justify-center">
@@ -234,7 +235,7 @@ export function App() {
             <p>Tenha uma conexão estável e exclusiva, com 100% da velocidade contratada, simetria entre download e upload, baixa latência e alta disponibilidade. Ideal para empresas que não podem parar, a Internet Dedicada, também conhecida como Link Dedicado, oferece acesso rápido e recursos que garantem proteção e controle total sobre sua rede.</p>
 
             <p className="mt-4">Com essa solução, você poderá focar no que realmente importa: o crescimento da sua empresa, enquanto desfruta de uma experiência perfeita em e-commerce, videoconferências, no uso de sistemas em nuvem e muito mais.</p>
-            <div className="mt-10 mb-20 grid gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="mt-10 mb-20 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               <CardBenefits />
             </div>
           </div>
