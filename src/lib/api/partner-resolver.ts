@@ -1,10 +1,9 @@
 import { api } from "@/lib/api/client"
 import {
   VIVO_CATEGORY,
-  VIVO_CLIENT_TYPE,
   VIVO_COMPANY_ID,
 } from "@/lib/constants/vivo"
-import { getPartnerHashFromUrl } from "@/lib/partner-hash"
+import { getClientTypeFromUrl, getPartnerHashFromUrl } from "@/lib/partner-hash"
 import type { PartnerData } from "@/types/order"
 
 type PartnerResolverResponse = {
@@ -16,7 +15,7 @@ async function fetchPartnerResolver(cep: string, partnerHash?: string | null) {
   const sanitizedCep = cep.replace(/\D/g, "")
   const query = new URLSearchParams({
     company_id: String(VIVO_COMPANY_ID),
-    client_type: VIVO_CLIENT_TYPE,
+    client_type: getClientTypeFromUrl(),
     category: VIVO_CATEGORY,
     cep: sanitizedCep,
   })

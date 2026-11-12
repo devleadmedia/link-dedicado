@@ -1,4 +1,14 @@
-const IGNORED_PATH_SEGMENTS = new Set([
+import { VIVO_CLIENT_TYPE, VIVO_SUPPORTED_CLIENT_TYPES } from "@/lib/constants/vivo"
+
+/**
+ * Formato único do link de parceiro:
+ *   /{parceiro}                  → parceiro
+ *   /{parceiro}/pj               → parceiro, empresa
+ *   /{parceiro}/{vendedor}       → parceiro + vendedor
+ *   /{parceiro}/{vendedor}/pj    → parceiro + vendedor, empresa
+ * Esta LP é só PJ: o `/pj` não muda o tipo e nunca é lido como parceiro ou vendedor.
+ */
+const RESERVED_PATH_SEGMENTS = new Set([
   "pf",
   "pj",
   "pf#",
@@ -11,6 +21,16 @@ const IGNORED_PATH_SEGMENTS = new Set([
   "politica-de-privacidade",
   "termos-de-uso",
 ])
+
+const PJ_SUFFIX = "pj"
+
+export type PartnerLinkClientType = "PF" | "PJ"
+
+export type PartnerLink = {
+  partnerHash: string | null
+  consultantHash: string | null
+  clientType: PartnerLinkClientType
+}
 
 const CONSULTANT_HASH_KEY = "vivo-link-consultant-hash"
 const CONSULTANT_PARTNER_KEY = "vivo-link-consultant-partner-hash"
@@ -39,30 +59,34 @@ function writeSession(key: string, value: string) {
   }
 }
 
+function isHashSegment(segment: string | undefined): segment is string {
+  if (!segment) return false
+  return !RESERVED_PATH_SEGMENTS.has(segment.toLowerCase()) && !/\.[a-zA-Z0-9]+$/.test(segment)
+}
+
+export function parsePartnerLink(pathname = window.location.pathname): PartnerLink {
+  const segments = pathSegments(pathname)
+  const wantsPj = segments[segments.length - 1]?.toLowerCase() === PJ_SUFFIX
+  const clientType: PartnerLinkClientType =
+    wantsPj && VIVO_SUPPORTED_CLIENT_TYPES.includes("PJ") ? "PJ" : VIVO_CLIENT_TYPE
+
+  const [first, second] = segments
+  const partnerHash = isHashSegment(first) ? first : null
+  const consultantHash = partnerHash && isHashSegment(second) ? second : null
+
+  return { partnerHash, consultantHash, clientType }
+}
+
 export function getPartnerHashFromUrl(pathname = window.location.pathname) {
-  const segment = pathSegments(pathname)[0]
-
-  if (!segment || IGNORED_PATH_SEGMENTS.has(segment.toLowerCase())) {
-    return null
-  }
-
-  return segment
+  return parsePartnerLink(pathname).partnerHash
 }
 
 export function getConsultantHashFromUrl(pathname = window.location.pathname) {
-  const segments = pathSegments(pathname)
-  const partnerHash = segments[0]
-  const consultantHash = segments[1]
+  return parsePartnerLink(pathname).consultantHash
+}
 
-  if (!partnerHash || IGNORED_PATH_SEGMENTS.has(partnerHash.toLowerCase())) {
-    return null
-  }
-
-  if (!consultantHash || IGNORED_PATH_SEGMENTS.has(consultantHash.toLowerCase())) {
-    return null
-  }
-
-  return consultantHash
+export function getClientTypeFromUrl(pathname = window.location.pathname) {
+  return parsePartnerLink(pathname).clientType
 }
 
 export function clearConsultantHash() {

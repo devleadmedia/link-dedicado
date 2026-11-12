@@ -58,6 +58,8 @@ function AppShell() {
             <Route path="/editar" element={<Edit />} />
             <Route path="/editar-concluido" element={<SuccessEdit />} />
             <Route path="/retomar" element={<Resume />} />
+            <Route path="/:partnerHash/:consultantHash/pj" element={<App />} />
+            <Route path="/:partnerHash/pj" element={<App />} />
             <Route path="/:partnerHash/:consultantHash" element={<App />} />
             <Route path="/:partnerHash?" element={<App />} />
           </Routes>

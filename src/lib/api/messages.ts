@@ -6,6 +6,7 @@ import {
   VIVO_LANDING_PAGE,
 } from "@/lib/constants/vivo"
 import { getCepAddress } from "@/lib/cep-storage"
+import type { CepAddressData } from "@/types/cep-address"
 import { toInternationalPhoneDigits } from "@/lib/phone"
 import { resolvePartner } from "@/lib/api/partner-resolver"
 import { getOrderSession } from "@/lib/order-storage"
@@ -23,6 +24,16 @@ export type TalkToUsMessagePayload = {
   email: string
   subject: string
   message: string
+  address_info?: TalkToUsAddressInfo
+}
+
+export type TalkToUsAddressInfo = {
+  zip_code: string
+  address: string
+  number: string
+  district: string
+  city: string
+  state: string
 }
 
 export type TalkToUsFormData = {
@@ -56,10 +67,27 @@ async function resolveTalkToUsPartner() {
   }
 }
 
+function addressInfoFromCep(data: CepAddressData | null): TalkToUsAddressInfo | undefined {
+  if (!data) return undefined
+
+  const zipCode = data.cep.replace(/\D/g, "")
+  if (zipCode.length !== 8) return undefined
+
+  return {
+    zip_code: zipCode,
+    address: data.address.trim(),
+    number: data.noNumber ? "S/N" : data.number.trim(),
+    district: data.neighborhood.trim(),
+    city: data.city.trim(),
+    state: data.state.trim().toUpperCase(),
+  }
+}
+
 export async function buildTalkToUsPayload(
   data: TalkToUsFormData,
 ): Promise<TalkToUsMessagePayload> {
   const { partnerId, partnerName } = await resolveTalkToUsPartner()
+  const addressInfo = addressInfoFromCep(getCepAddress())
 
   return {
     company: VIVO_COMPANY_NAME.toUpperCase(),
@@ -74,6 +102,7 @@ export async function buildTalkToUsPayload(
     email: data.email.trim(),
     subject: "Contato via site",
     message: data.message.trim(),
+    ...(addressInfo ? { address_info: addressInfo } : {}),
   }
 }
 

@@ -4,4 +4,6 @@ export const VIVO_CATEGORY = "link-dedicado"
 export const VIVO_LANDING_PAGE = "link-dedicado"
 export const VIVO_JOURNEY = ["vivo"] as const
 export const VIVO_CLIENT_TYPE = "PJ" as const
+/** Esta LP atende só PJ. O sufixo `/pj` do link é ignorado. */
+export const VIVO_SUPPORTED_CLIENT_TYPES: readonly ("PF" | "PJ")[] = ["PJ"]
 export const HERO_PLAN_ID = 168
