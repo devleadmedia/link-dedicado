@@ -1,4 +1,5 @@
 import type { ProductExtras } from "@/types/extras"
+import type { ProductBanner } from "@/types/product"
 
 export type PlanPromoDetail = {
   title: string
@@ -31,4 +32,5 @@ export type Plan = {
   uf: string[]
   online: boolean
   company_id: number
+  productBanner?: ProductBanner | null
 }

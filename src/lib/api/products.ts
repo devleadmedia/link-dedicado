@@ -2,7 +2,7 @@ import { api } from "@/lib/api/client"
 import { formatPrice } from "@/lib/price"
 import { VIVO_CATEGORY, VIVO_CLIENT_TYPE, VIVO_COMPANY_ID } from "@/lib/constants/vivo"
 import type { Plan, PlanDetail } from "@/types/plan"
-import type { Product, ProductDetail, ProductsResponse } from "@/types/product"
+import type { Product, ProductBanner, ProductDetail, ProductsResponse } from "@/types/product"
 
 function getDetailLabel(detail: ProductDetail | string) {
   if (typeof detail === "string") {
@@ -50,6 +50,24 @@ function mapDetailToPlanDetail(detail: ProductDetail | string): PlanDetail | nul
     highlight_top: detail.highlight_top === true,
     highlight_bottom: detail.highlight_bottom === true,
   }
+}
+
+function readBannerUrl(value: unknown) {
+  if (typeof value !== "string") return null
+
+  const url = value.trim()
+  return url.length > 0 ? url : null
+}
+
+function mapProductBanner(banner: ProductBanner | null | undefined): ProductBanner | null {
+  if (!banner) return null
+
+  const desktop = readBannerUrl(banner.desktop)
+  const mobile = readBannerUrl(banner.mobile)
+
+  if (!desktop && !mobile) return null
+
+  return { desktop, mobile }
 }
 
 function dedupeDetails(details: PlanDetail[]) {
@@ -110,6 +128,7 @@ export function mapProductToPlan(product: Product): Plan {
     extras: product.extras,
     uf: product.uf,
     online: product.online,
+    productBanner: mapProductBanner(product.product_banner),
   }
 }
 

@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import Card from "./components/card/Card"
-import Hero from "./components/hero/Hero"
+import HeroProductBanner from "./components/hero/HeroProductBanner"
 import DefaultLayout from "./components/layout/default-layout/DefaultLayout"
 import { fetchProducts } from "@/lib/api/products"
 import type { Plan } from "@/types/plan"
@@ -11,7 +11,6 @@ import { useLocation, useSearchParams } from "react-router-dom"
 import { getOrderByToken } from "./lib/api/orders"
 import { saveOrderSession } from "@/lib/order-storage"
 import { adoptConsultantHashFromOrder, getPartnerHashFromUrl } from "@/lib/partner-hash"
-import { HERO_PLAN_ID } from "@/lib/constants/vivo"
 import { HomeTable } from "./components/home-table/HomeTable"
 import FAQ from "./components/faq/FAQ"
 
@@ -144,7 +143,8 @@ export function App() {
   return (
     <main>
       {/* <Bubble /> Temporariamente desabilitado: robô de disparo ainda não está pronto */}
-      <Hero plan={plans.find((plan) => plan.id === HERO_PLAN_ID) ?? null} />
+      {/* Hero.tsx permanece no projeto e entra quando nenhum produto tem banner. */}
+      <HeroProductBanner plans={plans} isLoading={isLoading} />
 
       <div className="bg-[#F6F6F9] pt-10 w-full">
         <DefaultLayout className="pb-16">

@@ -1,3 +1,4 @@
+// Hero fixo da LP. O hero usa HeroProductBanner; este componente segue como fallback.
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import DefaultLayout from "../layout/default-layout/DefaultLayout"

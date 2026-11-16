@@ -22,6 +22,11 @@ export type ProductDetail = {
   highlight_bottom?: boolean
 }
 
+export type ProductBanner = {
+  desktop?: string | null
+  mobile?: string | null
+}
+
 export type Product = {
   id: number
   company: string
@@ -32,6 +37,7 @@ export type Product = {
   landing_page: string | null
   name: string
   online: boolean
+  product_banner?: ProductBanner | null
   offer_conditions: unknown[]
   badge: string | null
   offer_title: string
