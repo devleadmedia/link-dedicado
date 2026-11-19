@@ -1,8 +1,9 @@
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import Hero from "@/components/hero/Hero"
-import { HERO_PLAN_ID } from "@/lib/constants/vivo"
+// Banner fixo comentado. Para voltar, descomente o import e o return de Hero.
+// import Hero from "@/components/hero/Hero"
+// import { HERO_PLAN_ID } from "@/lib/constants/vivo"
 import { selectPlanForCheckout } from "@/lib/select-plan"
 import type { Plan } from "@/types/plan"
 
@@ -163,7 +164,9 @@ export default function HeroProductBanner({ plans, isLoading }: HeroProductBanne
   }
 
   if (slides.length === 0) {
-    return <Hero plan={plans.find((plan) => plan.id === HERO_PLAN_ID) ?? null} />
+    // Banner fixo comentado. O topo só aparece quando algum produto tem product_banner.
+    // return <Hero plan={plans.find((plan) => plan.id === HERO_PLAN_ID) ?? null} />
+    return null
   }
 
   return <HeroBannerCarousel key={slides.map((slide) => slide.plan.id).join("-")} slides={slides} />

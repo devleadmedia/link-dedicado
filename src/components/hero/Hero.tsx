@@ -1,4 +1,4 @@
-// Hero fixo da LP. O hero usa HeroProductBanner; este componente segue como fallback.
+// Hero fixo da LP. O componente permanece no projeto, mas o topo usa só o product_banner do admin.
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import DefaultLayout from "../layout/default-layout/DefaultLayout"

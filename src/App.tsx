@@ -143,7 +143,7 @@ export function App() {
   return (
     <main>
       {/* <Bubble /> Temporariamente desabilitado: robô de disparo ainda não está pronto */}
-      {/* Hero.tsx permanece no projeto e entra quando nenhum produto tem banner. */}
+      {/* Hero.tsx permanece no projeto. O topo só aparece com product_banner do admin. */}
       <HeroProductBanner plans={plans} isLoading={isLoading} />
 
       <div className="bg-[#F6F6F9] pt-10 w-full">
