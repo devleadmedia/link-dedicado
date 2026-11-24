@@ -1,5 +1,6 @@
 import { api } from "@/lib/api/client"
-import { getStoredConsultantHash } from "@/lib/partner-hash"
+import { consultantAllowedForLink } from "@/lib/api/partner-resolver"
+import { getPartnerHashFromUrl, getStoredConsultantHash } from "@/lib/partner-hash"
 import { getOrderSession } from "@/lib/order-storage"
 import type {
   CloseOrderPayload,
@@ -56,6 +57,7 @@ function responsibleConsultant(
 ): { responsible_consultant: ResponsibleConsultantInput } | Record<string, never> {
   const hash = getStoredConsultantHash()
   if (!hash || partnerId == null) return {}
+  if (!consultantAllowedForLink(getPartnerHashFromUrl())) return {}
 
   return { responsible_consultant: { hash } }
 }

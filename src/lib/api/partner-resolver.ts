@@ -3,7 +3,8 @@ import {
   VIVO_CATEGORY,
   VIVO_COMPANY_ID,
 } from "@/lib/constants/vivo"
-import { getClientTypeFromUrl, getPartnerHashFromUrl } from "@/lib/partner-hash"
+import { getClientTypeFromUrl, getPartnerHashFromUrl, isSamePartnerHash } from "@/lib/partner-hash"
+import { getOrderSession } from "@/lib/order-storage"
 import type { PartnerData } from "@/types/order"
 
 type PartnerResolverResponse = {
@@ -28,16 +29,48 @@ async function fetchPartnerResolver(cep: string, partnerHash?: string | null) {
   return data.partner
 }
 
+let consultantDecision: { linkHash: string; allowed: boolean } | null = null
+
+function rememberConsultantDecision(linkHash: string | null, partner: PartnerData | null) {
+  if (!linkHash) {
+    consultantDecision = null
+    return
+  }
+
+  consultantDecision = {
+    linkHash,
+    allowed: isSamePartnerHash(partner?.partner_hash, linkHash),
+  }
+}
+
+/** O consultor do link só vai no pedido quando o resolver devolve o mesmo parceiro. */
+export function consultantAllowedForLink(linkHash: string | null) {
+  if (!linkHash) return true
+
+  if (consultantDecision && isSamePartnerHash(consultantDecision.linkHash, linkHash)) {
+    return consultantDecision.allowed
+  }
+
+  const sessionHash = getOrderSession()?.partnerHash
+  if (!sessionHash) return false
+
+  return isSamePartnerHash(sessionHash, linkHash)
+}
+
 export async function resolvePartner(cep: string) {
   const partnerHash = getPartnerHashFromUrl()
 
+  let partner: PartnerData | null
   try {
-    return await fetchPartnerResolver(cep, partnerHash)
+    partner = await fetchPartnerResolver(cep, partnerHash)
   } catch (error) {
     if (!partnerHash) {
       throw error
     }
 
-    return fetchPartnerResolver(cep, null)
+    partner = await fetchPartnerResolver(cep, null)
   }
+
+  rememberConsultantDecision(partnerHash, partner)
+  return partner
 }
